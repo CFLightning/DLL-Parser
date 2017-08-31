@@ -20,7 +20,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             mappingDictionary = dictionaryLines.Select(line => line.Split(';')).ToDictionary(data => data[0], data => data[1]);
         }
 
-        public static string GenerateDocumentationFile(string path, string mappingPath)
+        public static string GenerateDocumentationFile(string path, string mappingPath, string expectedModification)
         {
             Types result;
             int lineAmount = 1;
@@ -95,7 +95,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                                     tagLine = trimmer;
                                     isOneLine = true;
                                 }
-                                writer.WriteLine("{0}<next>{1}<next>{2}<next>{3}<next>{4}", lineAmount, (int)result, obj.Name, tagLine, line);
+
+                                if ((tagLine == "#" + mappingDictionary[expectedModification] + "#") || (tagLine == "#" + expectedModification + "#"))
+                                {
+                                    writer.WriteLine("{0}<next>{1}<next>{2}<next>{3}<next>{4}", lineAmount, (int)result, obj.Name, tagLine, line);
+                                }
                                 lineAmount++;
                                 if (isOneLine)
                                 {

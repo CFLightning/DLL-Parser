@@ -1,11 +1,8 @@
 ﻿using IT.integro.DynamicsNAV.ProcessingTool.parserClass;
 using IT.integro.DynamicsNAV.ProcessingTool.repositories;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 {
@@ -22,23 +19,24 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             return true;
         }
 
-        public static bool SaveChangesToFiles(string path)
+        public static bool SaveChangesToFiles(string path, string modification)
         {
             string modPath = path + "Modifications";
             DirectoryInfo directory = Directory.CreateDirectory(modPath);
-            foreach (ChangeClass chg in ChangeClassRepository.changeRepository)
+            ChangeClass chg = ChangeClassRepository.changeRepository.Find(x => x.ChangelogCode == modification);
             {
-                if (File.Exists(modPath + @"\Modification " + chg.ChangelogCode + " list.txt")) File.Delete(modPath + @"\Modification " + chg.ChangelogCode + " list.txt");
+                if (File.Exists(modPath + @"\Modification " + chg.ChangelogCode + " list.txt"))
+                    File.Delete(modPath + @"\Modification " + chg.ChangelogCode + " list.txt");
             }
 
-            foreach (ChangeClass chg in ChangeClassRepository.changeRepository)
+            foreach (ChangeClass modChange in ChangeClassRepository.changeRepository.Where(o => o.ChangelogCode == modification))
             {
-                if (chg.ChangeType == "Code")
+                if (modChange.ChangeType == "Code")
                 {
-                    File.AppendAllText(modPath + @"\Modification " + chg.ChangelogCode + " list.txt", "Source object: " + chg.SourceObject + Environment.NewLine);
-                    File.AppendAllText(modPath + @"\Modification " + chg.ChangelogCode + " list.txt", "Change location: " + chg.Location + Environment.NewLine + Environment.NewLine);
-                    File.AppendAllText(modPath + @"\Modification " + chg.ChangelogCode + " list.txt", chg.Contents);
-                    File.AppendAllText(modPath + @"\Modification " + chg.ChangelogCode + " list.txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
+                    File.AppendAllText(modPath + @"\Modification " + modChange.ChangelogCode + " list.txt", "Source object: " + modChange.SourceObject + Environment.NewLine);
+                    File.AppendAllText(modPath + @"\Modification " + modChange.ChangelogCode + " list.txt", "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
+                    File.AppendAllText(modPath + @"\Modification " + modChange.ChangelogCode + " list.txt", modChange.Contents);
+                    File.AppendAllText(modPath + @"\Modification " + modChange.ChangelogCode + " list.txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
                 }
             }
             return true;
@@ -50,24 +48,21 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             return filepath;
         }
 
-        public static bool SaveObjectModificationFiles(string path)
+        public static bool SaveObjectModificationFiles(string path, string modification)
         {
             string objModPath = path + "Modification Objects";
             DirectoryInfo directory = Directory.CreateDirectory(objModPath);
 
-            foreach (ChangeClass chg in ChangeClassRepository.changeRepository)
+            ChangeClass chg = ChangeClassRepository.changeRepository.Find(x => x.ChangelogCode == modification);
             {
-                if (File.Exists(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt")) File.Delete(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt");
+                if (File.Exists(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt"))
+                    File.Delete(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt");
             }
 
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
-                List<string> changeList = new List<string>();
-                changeList = obj.Changelog.Select(o => o.ChangelogCode).Distinct().ToList();
-
-                foreach (string change in changeList)
                 {
-                    File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(change) + " .txt", obj.Contents);
+                    File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(modification) + " .txt", obj.Contents);
                 }
             }
             return true;

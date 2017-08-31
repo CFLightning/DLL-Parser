@@ -28,7 +28,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             return "    Version List=" + versionString + ";";
         }
 
-        public static bool UpdateDocumentationTrigger()
+        public static bool UpdateDocumentationTrigger(string expectedModification)
         {
 
             List<string> locationList = new List<string>();

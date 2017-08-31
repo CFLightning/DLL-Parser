@@ -9,7 +9,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 {
     public class ProcessFile
     {
-        public bool RunProcessing(string expectedModification, string inputFilePath, string mappingFilePath, string outputPath)
+        public static bool RunProcessing(string expectedModification, string inputFilePath, string mappingFilePath, string outputPath)
         {
             outputPath = outputPath + "\\";
 
@@ -22,11 +22,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 return false;
             }
             ModificationCleanerTool.CleanChangeCode();
-            DocumentationTrigger.UpdateDocumentationTrigger();
+            DocumentationTrigger.UpdateDocumentationTrigger(expectedModification);
             SaveTool.SaveObjectsToFiles(outputPath);
-            SaveTool.SaveChangesToFiles(outputPath);
-            SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath));
-            SaveTool.SaveObjectModificationFiles(outputPath);
+            SaveTool.SaveChangesToFiles(outputPath, expectedModification);
+            SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expectedModification));
+            SaveTool.SaveObjectModificationFiles(outputPath, expectedModification);
 
             return true;
         }

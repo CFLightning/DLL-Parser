@@ -22,10 +22,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
                 InitTags(obj);
-                if (expectedModification != "" && !tags.Contains(expectedModification))
-                    return false;
-                if (expectedModification != "")
-                    tags = new List<string>() { expectedModification };
                 foreach (string modtag in tags)
                 {
                     StringReader reader = new StringReader(obj.Contents);
