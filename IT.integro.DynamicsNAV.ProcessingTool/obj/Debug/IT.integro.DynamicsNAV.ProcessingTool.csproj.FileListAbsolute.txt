@@ -1,0 +1,6 @@
+c:\users\administrator\documents\visual studio 2017\Projects\IT.integro.DynamicsNAV.ProcessingTool\IT.integro.DynamicsNAV.ProcessingTool\obj\Debug\IT.integro.DynamicsNAV.ProcessingTool.csprojResolveAssemblyReference.cache
+c:\users\administrator\documents\visual studio 2017\Projects\IT.integro.DynamicsNAV.ProcessingTool\IT.integro.DynamicsNAV.ProcessingTool\obj\Debug\IT.integro.DynamicsNAV.ProcessingTool.csproj.CoreCompileInputs.cache
+c:\users\administrator\documents\visual studio 2017\Projects\IT.integro.DynamicsNAV.ProcessingTool\IT.integro.DynamicsNAV.ProcessingTool\bin\Debug\IT.integro.DynamicsNAV.ProcessingTool.dll
+c:\users\administrator\documents\visual studio 2017\Projects\IT.integro.DynamicsNAV.ProcessingTool\IT.integro.DynamicsNAV.ProcessingTool\bin\Debug\IT.integro.DynamicsNAV.ProcessingTool.pdb
+c:\users\administrator\documents\visual studio 2017\Projects\IT.integro.DynamicsNAV.ProcessingTool\IT.integro.DynamicsNAV.ProcessingTool\obj\Debug\IT.integro.DynamicsNAV.ProcessingTool.dll
+c:\users\administrator\documents\visual studio 2017\Projects\IT.integro.DynamicsNAV.ProcessingTool\IT.integro.DynamicsNAV.ProcessingTool\obj\Debug\IT.integro.DynamicsNAV.ProcessingTool.pdb
