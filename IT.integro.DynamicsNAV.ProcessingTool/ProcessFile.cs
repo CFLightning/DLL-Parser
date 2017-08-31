@@ -3,32 +3,32 @@ using IT.integro.DynamicsNAV.ProcessingTool.indentationChecker;
 using IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool;
 using IT.integro.DynamicsNAV.ProcessingTool.saveTool;
 using System;
-
+using System.IO;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool
 {
     public class ProcessFile
     {
-        public static bool RunProcessing(string expectedModification, string inputFilePath, string mappingFilePath, string outputPath)
+        public static string RunProcessing(string expectedModification, string inputFilePath, string mappingFilePath)
         {
-            outputPath = outputPath + "\\";
+            string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
+            DirectoryInfo directory = Directory.CreateDirectory(outputPath);
 
             FileSplitter.SplitFile(inputFilePath);
             IndentationChecker.CheckIndentations();
+            //ModificationSearchTool.FindAndSaveChanges(expectedModification);
             if (!ModificationSearchTool.FindAndSaveChanges(expectedModification))
             {
-                Console.WriteLine("ERROR: Modofication {0} not found", expectedModification);
-                Console.ReadLine();
-                return false;
+                return "ERROR404";
             }
             ModificationCleanerTool.CleanChangeCode();
             DocumentationTrigger.UpdateDocumentationTrigger(expectedModification);
-            SaveTool.SaveObjectsToFiles(outputPath);
+            //SaveTool.SaveObjectsToFiles(outputPath);
             SaveTool.SaveChangesToFiles(outputPath, expectedModification);
             SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expectedModification));
             SaveTool.SaveObjectModificationFiles(outputPath, expectedModification);
 
-            return true;
+            return outputPath;
         }
     }
 }
