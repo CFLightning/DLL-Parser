@@ -38,11 +38,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             beginPatternParts.Add(@"<-+ *" + prefix + modNo + endSymbol);
             beginPatternParts.Add(prefix + modNo + @" *(?i)((begin)|(start))" + endSymbol);
             beginPatternParts.Add(prefix + modNo + @" *(?i)(/S|/B)" + endSymbol);
+            beginPatternParts.Add(@"START/(\w)*/?(\w)*/" + modNo + endSymbol);
 
             List<string> endPatternParts = new List<string>();
             endPatternParts.Add(@"-+> *" + prefix + modNo + endSymbol);
             endPatternParts.Add(prefix + modNo + @" *(?i)((end)|(stop))" + endSymbol);
             endPatternParts.Add(prefix + modNo + @" *(?i)/E" + endSymbol);
+            endPatternParts.Add(@"STOP ?/(\w)*/?(\w)*/" + modNo + endSymbol);
 
             List<string> otherPatternParts = new List<string>();
             otherPatternParts.Add(prefix + modNo + @" *$");
@@ -202,6 +204,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             string[] codeLines = code.Replace("\r", "").Split('\n');
             List<string> ret = FindModsInTags(FindTags(codeLines));
             return ret.Union(GetFieldDescriptionTagList(code)).ToList();
+        }
+
+        static public string GetModificationString(string code)
+        {
+            string[] codeLines = code.Replace("\r", "").Split('\n');
+            List<string> ret = FindModsInTags(FindTags(codeLines));
+            return string.Join(",", ret.ToArray());
         }
 
         static public List<string> GetTagList(string code)

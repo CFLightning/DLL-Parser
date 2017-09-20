@@ -7,8 +7,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(ProcessFile.RunProcessing("MF100sdfsd", @"C:\ExportedObjectsNAVcust.txt", @"C:\mapping.csv"));
-            //ProcessFile.RunProcessing(@"MF100.2", @"C:\FILES\ITWS_Test_01.08.2017.txt", @"C:\FILES\mapping.csv", @"C:\FILES\Output");
+            Console.WriteLine(ProcessFile.RunProcessing("048", @"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt", @""));
             Console.ReadKey();
         }
     }

@@ -1,6 +1,7 @@
 ﻿using IT.integro.DynamicsNAV.ProcessingTool.parserClass;
 using IT.integro.DynamicsNAV.ProcessingTool.repositories;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -19,17 +20,19 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             return true;
         }
 
-        public static bool SaveChangesToFiles(string path, string modification)
+        public static bool SaveChangesToFiles(string path, List<string> modifications)
         {
             string modPath = path + "Modifications";
             DirectoryInfo directory = Directory.CreateDirectory(modPath);
-            ChangeClass chg = ChangeClassRepository.changeRepository.Find(x => x.ChangelogCode == modification);
+            List<ChangeClass> changes = ChangeClassRepository.changeRepository.FindAll(x => modifications.Contains(x.ChangelogCode));
+
+            foreach (ChangeClass chg in changes)
             {
                 if (File.Exists(modPath + @"\Modification " + chg.ChangelogCode + " list.txt"))
                     File.Delete(modPath + @"\Modification " + chg.ChangelogCode + " list.txt");
             }
-
-            foreach (ChangeClass modChange in ChangeClassRepository.changeRepository.Where(o => o.ChangelogCode == modification))
+            
+            foreach (ChangeClass modChange in changes)
             {
                 if (modChange.ChangeType == "Code")
                 {
@@ -48,31 +51,72 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             return filepath;
         }
 
-        public static bool SaveObjectModificationFiles(string path, string modification)
+        public static bool SaveObjectModificationFiles(string path, List<string> modifications)
         {
             string objModPath = path + "Modification Objects";
             DirectoryInfo directory = Directory.CreateDirectory(objModPath);
 
-            ChangeClass chg = ChangeClassRepository.changeRepository.Find(x => x.ChangelogCode == modification);
-            {
-                if (File.Exists(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt"))
-                    File.Delete(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt");
-            }
+            List<ChangeClass> changes = ChangeClassRepository.changeRepository.FindAll(x => modifications.Contains(x.ChangelogCode));
 
-            foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
+            foreach (ChangeClass chg in changes)
             {
                 {
-                    File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(modification) + " .txt", obj.Contents);
+                    if (File.Exists(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt"))
+                        File.Delete(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt");
+                }
+            }
+
+            foreach (string modification in modifications)
+            {
+                foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
+                {
+                    {
+                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(modification) + " .txt", obj.Contents);
+                    }
                 }
             }
             return true;
         }
 
-        public static bool SaveDocumentationToFile(string path, string documentation)
+        public static bool SaveDocumentationToFile(string path, string documentation, List<string> expectedModifications, string mappingPath)
         {
+            Dictionary<string, string> mappingDictionary = new Dictionary<string, string>();
+            if (File.Exists(mappingPath))
+            {
+                var dictionaryLines = File.ReadLines(mappingPath);
+                mappingDictionary = dictionaryLines.Select(line => line.Split(';')).ToDictionary(data => data[0], data => data[1]);
+            }
+
             string docPath = path + "Documentation";
             DirectoryInfo directory = Directory.CreateDirectory(docPath);
             File.WriteAllText(docPath + @"\Documentation.txt", documentation);
+
+            docPath = docPath + @"\Modification Documentation";
+            directory = Directory.CreateDirectory(docPath);
+
+            foreach (string modification in expectedModifications)
+            {
+                {
+                    if (File.Exists(docPath + @"\" + modification + " documentation file.txt"))
+                        File.Delete(docPath + @"\" + modification + " documentation file.txt");
+                }
+            }
+
+            foreach (string modification in expectedModifications)
+            {
+                string line;
+                int lineAmount = 1;
+                StringReader reader = new StringReader(documentation);
+                while (null != (line = reader.ReadLine()))
+                {
+                    if (line.Contains(modification) || (mappingDictionary.ContainsKey(modification) && line.Contains(mappingDictionary[modification])))
+                    {
+                        File.AppendAllText(docPath + @"\" + modification + " documentation file.txt", lineAmount + line.Substring(line.IndexOf("<next>")) + Environment.NewLine);
+                        lineAmount++;
+                    }
+                }
+                reader.Close();
+            }
             return true;
         }
     }

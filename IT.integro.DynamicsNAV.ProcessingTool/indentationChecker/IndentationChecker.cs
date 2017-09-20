@@ -94,7 +94,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.indentationChecker
                             }
                             endsToGo--;
                         }
-                        if (((line.Length - line.TrimStart(' ').Length) < currentIndentation) && triggerFlag == true && beginFlag == true && !(line.Contains(check)) && !(isBegin)) // && !(line.Contains("BEGIN")
+                        if ((line.Contains(" BEGIN ") || line.EndsWith(" BEGIN")) && !(isBegin))
+                        {
+                            endsToGo++;
+                        }
+                        if (((line.Length - line.TrimStart(' ').Length) < currentIndentation) && triggerFlag == true && beginFlag == true && !(line.Contains(check)) && !(isBegin))
                         {
                             string indenter = string.Empty.PadLeft(currentIndentation);
                             line = indenter + line.TrimStart(' ');

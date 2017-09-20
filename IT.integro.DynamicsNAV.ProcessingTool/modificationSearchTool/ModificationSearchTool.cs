@@ -17,15 +17,19 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
             tags = TagDetection.GetModyficationList(obj.Contents);
         }
 
-        public static bool FindAndSaveChanges(string expectedModification)
+        public static bool FindAndSaveChanges(List<string> expectedModifications)
         {
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
                 InitTags(obj);
-                if (!(tags.Contains(expectedModification)))
+                foreach(string expectedModification in expectedModifications)
                 {
-                    return false;
+                    if (!(tags.Contains(expectedModification)))
+                    {
+                        return false;
+                    }
                 }
+
                 foreach (string modtag in tags)
                 {
                     StringReader reader = new StringReader(obj.Contents);

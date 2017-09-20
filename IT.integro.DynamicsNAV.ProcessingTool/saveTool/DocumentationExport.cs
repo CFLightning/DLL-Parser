@@ -16,11 +16,18 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
         private static void InitDictionary(string path)
         {
-            var dictionaryLines = File.ReadLines(path);
-            mappingDictionary = dictionaryLines.Select(line => line.Split(';')).ToDictionary(data => data[0], data => data[1]);
+            if(File.Exists(path))
+            {
+                var dictionaryLines = File.ReadLines(path);
+                mappingDictionary = dictionaryLines.Select(line => line.Split(';')).ToDictionary(data => data[0], data => data[1]);
+            }
+            else
+            {
+                mappingDictionary = new Dictionary<string, string>();
+            }
         }
 
-        public static string GenerateDocumentationFile(string path, string mappingPath, string expectedModification)
+        public static string GenerateDocumentationFile(string path, string mappingPath, List<string> expectedModifications)
         {
             Types result;
             int lineAmount = 1;
@@ -95,10 +102,17 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                                     tagLine = trimmer;
                                     isOneLine = true;
                                 }
-
-                                if ((tagLine == "#" + mappingDictionary[expectedModification] + "#") || (tagLine == "#" + expectedModification + "#"))
+                                foreach (string expectedModification in expectedModifications)
                                 {
-                                    writer.WriteLine("{0}<next>{1}<next>{2}<next>{3}<next>{4}", lineAmount, (int)result, obj.Name, tagLine, line);
+                                    if ((mappingDictionary.ContainsKey(expectedModification) && (tagLine == "#" + mappingDictionary[expectedModification] + "#")) || tagLine == "#" + expectedModification + "#")
+                                    {
+                                        writer.WriteLine("{0}<next>{1}<next>{2}<next>{3}<next>{4}", lineAmount, (int)result, obj.Name, tagLine, line);
+                                    }
+                                   
+                                    //if ((tagLine == "#" + mappingDictionary[expectedModification] + "#") || (tagLine == "#" + expectedModification + "#"))
+                                    //{
+                                    //    writer.WriteLine("{0}<next>{1}<next>{2}<next>{3}<next>{4}", lineAmount, (int)result, obj.Name, tagLine, line);
+                                    //}
                                 }
                                 lineAmount++;
                                 if (isOneLine)
