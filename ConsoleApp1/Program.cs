@@ -7,7 +7,11 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(ProcessFile.RunProcessing("048", @"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt", @""));
+            Console.WriteLine(ProcessFile.RunProcessing("ELSE", @"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt", @""));
+            //string allMods = ProcessFile.PassAllModificationTags(@"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt");
+            //Console.WriteLine(ProcessFile.RunPreview("ELSE", @"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt"));
+            
+            //Console.WriteLine("end");
             Console.ReadKey();
         }
     }

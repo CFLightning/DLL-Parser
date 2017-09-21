@@ -66,12 +66,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 }
             }
 
-            foreach (string modification in modifications)
+            //foreach (string modification in modifications)
+            foreach (ChangeClass chg in changes)
             {
                 foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
                 {
+                    if(obj.changelog.Contains(chg))
                     {
-                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(modification) + " .txt", obj.Contents);
+                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt", obj.Contents);
                     }
                 }
             }

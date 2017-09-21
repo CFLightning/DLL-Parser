@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using IT.integro.DynamicsNAV.ProcessingTool.repositories;
+using System.Text.RegularExpressions;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.indentationChecker
 {
@@ -47,6 +48,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.indentationChecker
         public static bool CheckIndentations()
         {
             InitTriggerList();
+            Regex endRegex = new Regex(@"^ *END(;|.|$)");
+
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
                 StringReader reader = new StringReader(obj.Contents);
@@ -85,7 +88,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.indentationChecker
                     }
                     if (triggerFlag == true && beginFlag == true)
                     {
-                        if (line.Contains(" END ") || line.Contains(" END;") || line.EndsWith(" END"))
+                        if (endRegex.IsMatch(line))//line.Contains(" END ") || line.Contains(" END;") || line.EndsWith(" END") || line.Contains(" END."))
                         {
                             if (endsToGo == 1)
                             {
@@ -93,6 +96,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.indentationChecker
                                 beginFlag = false;
                             }
                             endsToGo--;
+                            if (endsToGo < 0) endsToGo = 0;
                         }
                         if ((line.Contains(" BEGIN ") || line.EndsWith(" BEGIN")) && !(isBegin))
                         {

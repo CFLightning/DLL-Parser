@@ -38,7 +38,42 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-        public static List<string> PrepareProcessing(string expectedModifications)
+    public static string RunPreview(string expectedModifications, string inputFilePath)
+    {
+        string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
+        DirectoryInfo directory = Directory.CreateDirectory(outputPath);
+
+        List<string> expModifications = PrepareProcessing(expectedModifications);
+        FileSplitter.SplitFile(inputFilePath);
+        //IndentationChecker.CheckIndentations();
+        reduceObjects(expModifications);
+        if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
+            return "ERROR404";
+        ModificationCleanerTool.CleanChangeCode();
+        //DocumentationTrigger.UpdateDocumentationTrigger();
+        SaveTool.SaveChangesToFiles(outputPath, expModifications);
+        //SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
+        SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
+        ChangeClassRepository.changeRepository.Clear();
+        ObjectClassRepository.objectRepository.Clear();
+        return outputPath;
+    }
+
+        private static List<string> reduceObjects(List<string> expectedModifications)
+        {
+            List<string> objectsToSearch = new List<string>();
+            string modObjPath = Path.GetTempPath() + @"NAVCommentTool\Modification Objects List\";
+
+            foreach (var mod in expectedModifications)
+            {
+                objectsToSearch = objectsToSearch.Union(File.ReadLines(modObjPath + mod + ".txt").ToList()).ToList();
+            }
+
+            ObjectClassRepository.objectRepository = ObjectClassRepository.objectRepository.Where(o => objectsToSearch.Contains(o.Name)).ToList();
+            return objectsToSearch;
+        }
+
+public static List<string> PrepareProcessing(string expectedModifications)
         {
             return expectedModifications.Split(',').ToList();
         }

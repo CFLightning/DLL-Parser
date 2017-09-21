@@ -5,28 +5,44 @@ using System.Text;
 using IT.integro.DynamicsNAV.ProcessingTool.repositories;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
 {
     public class ModificationSearchTool
     {
         private static List<string> tags;
+        private static List<bool> checklist;
 
         static void InitTags(ObjectClass obj)
         {
             tags = TagDetection.GetModyficationList(obj.Contents);
         }
 
+        static void InitErrorChecklist(List<string> expectedModifications)
+        {
+             checklist = Enumerable.Repeat(false, expectedModifications.Count()).ToList();
+        }
+
         public static bool FindAndSaveChanges(List<string> expectedModifications)
         {
+            InitErrorChecklist(expectedModifications);
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
                 InitTags(obj);
-                foreach(string expectedModification in expectedModifications)
+                //foreach(string expectedModification in expectedModifications)
+                //{
+                //    if (!(tags.Contains(expectedModification)))
+                //    {
+                //        return false;
+                //    }
+                //}
+
+                for(int i = 0; i < expectedModifications.Count; i++)
                 {
-                    if (!(tags.Contains(expectedModification)))
+                    if (tags.Contains(expectedModifications[i]))
                     {
-                        return false;
+                        checklist[i] = true;
                     }
                 }
 
@@ -166,7 +182,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                     }
                 }
             }
-            return true;
+            if(checklist.Contains(false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

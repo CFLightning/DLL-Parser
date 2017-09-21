@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -181,7 +182,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return modList;
         }
 
-
         static public string GetTagedModyfication(string tagLine)
         {
             if (tagPatterns[(int)Marks.BEGIN].IsMatch(tagLine))
@@ -209,9 +209,50 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static public string GetModificationString(string code)
         {
             string[] codeLines = code.Replace("\r", "").Split('\n');
-            List<string> ret = FindModsInTags(FindTags(codeLines));
-            return string.Join(",", ret.ToArray());
+            List<string> mods = FindModsInTags(FindTagsAndGenerateList(codeLines));
+            return string.Join(",", mods.ToArray());
         }
+
+        static private List<string> FindTagsAndGenerateList(string[] codeLines)
+        {
+            string outputPath = Path.GetTempPath() + @"NAVCommentTool\Modification Objects List\";
+            DirectoryInfo directory = Directory.CreateDirectory(outputPath);
+            foreach (FileInfo file in directory.GetFiles())
+            {
+                file.Delete();
+            }
+            char[] separator = new char[] { ' ' };
+            string obj = codeLines[0].Split(separator, 4)[3];
+            List<string> modContentList = new List<string>();
+            List<string> modList = new List<string>();
+
+            List<string> tagList = new List<string>();
+            foreach (var line in codeLines)
+            {
+                if (line.StartsWith("OBJECT "))
+                    obj = line.Split(separator, 4)[3].Replace(" ", string.Empty);
+                if (line.Contains(@"//"))
+                {
+                    if (CheckIfTagInLine(line))
+                    {
+                        tagList.Add(line);
+                        if (!modList.Contains(GetTagedModyfication(line)))
+                        {
+                            modList.Add(GetTagedModyfication(line));
+                            modContentList.Add("");
+                        }
+                        if (!modContentList[modList.IndexOf(GetTagedModyfication(line))].Contains(obj))
+                            modContentList[modList.IndexOf(GetTagedModyfication(line))] += (obj + System.Environment.NewLine);
+                    }
+                }
+            }
+            for (int i = 0; i<modList.Count; i++)
+            {
+                string file = outputPath + modList[i] + ".txt";
+                File.WriteAllText(file, modContentList[i]);
+            }
+            return tagList;
+          }
 
         static public List<string> GetTagList(string code)
         {
@@ -268,7 +309,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         {
             string fieldDescription = FlagDetection.GetDescription(codeLine);
             fieldDescription = fieldDescription.Replace("IT/", "");
-            return fieldDescription.Split(',').ToList();
+            if(fieldDescription == fieldDescription.ToUpper())
+            {
+                return fieldDescription.Split(',').ToList();
+            }
+            else
+            {
+                return new List<string>();
+            }
         }
     }
 }
