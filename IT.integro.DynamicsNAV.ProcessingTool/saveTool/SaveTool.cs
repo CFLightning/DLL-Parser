@@ -30,6 +30,12 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             {
                 if (File.Exists(modPath + @"\Modification " + CleanFileName(chg.ChangelogCode) + " list.txt"))
                     File.Delete(modPath + @"\Modification " + CleanFileName(chg.ChangelogCode) + " list.txt");
+
+                string detailPath = modPath + @"\Details\" + CleanFileName(chg.ChangelogCode);
+                DirectoryInfo directoryDetail = Directory.CreateDirectory(detailPath);
+                if (File.Exists(detailPath + @"\" + chg.SourceObject + "#" + chg.Location + @".txt"))
+                    File.Delete(detailPath + @"\" + chg.SourceObject + "#" + chg.Location + @".txt");
+
             }
             
             foreach (ChangeClass modChange in changes)
@@ -40,6 +46,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                     File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
                     File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", modChange.Contents);
                     File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
+
+                    string detailPath = modPath + @"\Details\" + CleanFileName(modChange.ChangelogCode);
+
+                    File.AppendAllText(detailPath + @"\" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", modChange.Contents);
+                    File.AppendAllText(detailPath + @"\" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
                 }
             }
             return true;

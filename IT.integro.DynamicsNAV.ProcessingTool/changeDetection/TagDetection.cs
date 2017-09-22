@@ -150,7 +150,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return tagList;
         }
 
-        static private List<string> FindModsInTags(List<string> tagList)
+        static private List<string> FindModsInTags(List<string> tagList, bool saveTagList = false)
         {
             List<string> tagModList = new List<string>();
             Match match = null;
@@ -182,8 +182,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 }
             }
 
-            File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagList.txt", tagList);
-            File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagModList.txt", tagModList);
+            if (saveTagList)
+            {
+                File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagList.txt", tagList);
+                File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagModList.txt", tagModList);
+            }
 
             return modList;
         }
@@ -245,13 +248,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static public string GetModificationString(string code)
         {
             string[] codeLines = code.Replace("\r", "").Split('\n');
-            List<string> mods = FindModsInTags(FindTagsAndGenerateList(codeLines));
+            List<string> mods = FindModsInTags(FindTagsAndGenerateList(codeLines),true);
             return string.Join(",", mods.ToArray());
         }
 
         static private List<string> FindTagsAndGenerateList(string[] codeLines)
         {
-            File.Delete(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt");
+            if (File.Exists(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt"))
+                File.Delete(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt");
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\Modification Objects List\";
             DirectoryInfo directory = Directory.CreateDirectory(outputPath);
             foreach (FileInfo file in directory.GetFiles())
