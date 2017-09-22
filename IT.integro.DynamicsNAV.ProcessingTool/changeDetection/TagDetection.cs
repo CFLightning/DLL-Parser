@@ -9,10 +9,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
     {
         static Regex[] tagPatterns;
         static List<Regex[]> tagPairPattern;
-        static string modNo;
-        static string prefix;
-        static string endSymbol;
-        static string date;
+        static string regMod;
+        static string regPrefix;
+        static string regEnd;
+        static string regDate;
 
         static TagDetection()
         {
@@ -28,31 +28,31 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             string lineFrontComment = @" *// *";                        // BEGIN,AND
             string lineBackComment = @" *[^\s/{2}]+.*// *";             // OTHER
 
-            date = @"(\d{2,4}.\d{2}.\d{2,4})?";
-            modNo = @"(?<mod>[A-Z0-9\._-]+)";
-            prefix = @"(IT/)?";
-            //endSymbol = @".?" + date + @"?" + "($| )";
-            endSymbol = @".?" + date + "$?";
+            regDate = @"(\d{2,4}.\d{2}.\d{2,4})?";
+            regMod = @"(?<mod>[A-Z0-9\._-]+)";
+            //regITPrefix = @"(IT/)?";
+            regPrefix = @"((\w)*/)?";
+            regEnd = @".?$?";
 
             List<Regex[]> PatternList = new List<Regex[]>();
 
             List<string> beginPatternParts = new List<string>();
-            beginPatternParts.Add(@"<-+ *" + prefix + modNo + endSymbol);
-            beginPatternParts.Add(prefix + modNo + @" *(?i)((begin)|(start))" + endSymbol);
-            beginPatternParts.Add(prefix + modNo + @" *(?i)(/S|/B)" + endSymbol);
-            beginPatternParts.Add(@"START/(?<mod>NAV[A-Z0-9/\._-]+)" + "$");
-            beginPatternParts.Add(@"START/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + endSymbol);
+            beginPatternParts.Add(@"<-+ *" + regPrefix + regMod + regEnd);
+            beginPatternParts.Add(regPrefix + regMod + @" *(?i)((begin)|(start))" + regEnd);
+            beginPatternParts.Add(regPrefix + regMod + @" *(?i)(/S|/B)" + regEnd);
+            beginPatternParts.Add(@"START/(?<mod>NAV[A-Z0-9/\._-]+)" + regEnd);
+            beginPatternParts.Add(@"START/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + regEnd);
 
             List<string> endPatternParts = new List<string>();
-            endPatternParts.Add(@"-+> *" + prefix + modNo + endSymbol);
-            endPatternParts.Add(prefix + modNo + @" *(?i)((end)|(stop))" + endSymbol);
-            endPatternParts.Add(prefix + modNo + @" *(?i)/E" + endSymbol);
-            endPatternParts.Add(@"STOP ?/(?<mod>NAV[A-Z0-9/\._-]+)" + "$");
-            endPatternParts.Add(@"STOP ?/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + endSymbol);
+            endPatternParts.Add(@"-+> *" + regPrefix + regMod + regEnd);
+            endPatternParts.Add(regPrefix + regMod + @" *(?i)((end)|(stop))" + regEnd);
+            endPatternParts.Add(regPrefix + @"((\w)*/)?" + regMod + @" *(?i)/E" + regEnd);
+            endPatternParts.Add(@"STOP ?/(?<mod>NAV[A-Z0-9/\._-]+)" + regEnd);
+            endPatternParts.Add(@"STOP ?/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + regEnd);
 
             List<string> otherPatternParts = new List<string>();
             //otherPatternParts.Add(prefix + modNo + @" *$");
-            otherPatternParts.Add(prefix + modNo + @" *(?i)/S/E$");
+            otherPatternParts.Add(regPrefix + regMod + @" *(?i)/S/E$");
 
             Regex rgxBegin, rgxEnd, rgxOther;
             Regex[] rgxPair;
@@ -99,7 +99,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 {
                     string patternString = patternPair[(int)Marks.END].ToString();
                     string mod = GetTagedModyfication(beginTagLine);
-                    patternString = patternString.Replace(modNo, mod);
+                    patternString = patternString.Replace(regMod, mod);
                     return new Regex(patternString);
                 }
             }
@@ -248,6 +248,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static private List<string> FindTagsAndGenerateList(string[] codeLines)
         {
+            File.Delete(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt");
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\Modification Objects List\";
             DirectoryInfo directory = Directory.CreateDirectory(outputPath);
             foreach (FileInfo file in directory.GetFiles())
@@ -263,7 +264,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             foreach (var line in codeLines)
             {
                 if (line.StartsWith("OBJECT "))
+                {
+                    File.AppendAllText(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt", line + System.Environment.NewLine);
                     obj = line.Split(separator, 4)[3];
+                }
                 if (line.Contains(@"//"))
                 {
                     if (CheckIfTagInLine(line))
@@ -278,6 +282,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                         if (!modContentList[modList.IndexOf(GetTagedModyfication(line))].Contains(obj))
                             modContentList[modList.IndexOf(GetTagedModyfication(line))] += (System.Environment.NewLine + obj);
                     }
+                    else
+                        File.AppendAllText(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt", "\t" + line.TrimStart(' ') + System.Environment.NewLine);
                 }
             }
             for (int i = 0; i<modList.Count; i++)
