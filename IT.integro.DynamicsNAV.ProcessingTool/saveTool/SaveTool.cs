@@ -28,18 +28,18 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
             foreach (ChangeClass chg in changes)
             {
-                if (File.Exists(modPath + @"\Modification " + chg.ChangelogCode + " list.txt"))
-                    File.Delete(modPath + @"\Modification " + chg.ChangelogCode + " list.txt");
+                if (File.Exists(modPath + @"\Modification " + CleanFileName(chg.ChangelogCode) + " list.txt"))
+                    File.Delete(modPath + @"\Modification " + CleanFileName(chg.ChangelogCode) + " list.txt");
             }
             
             foreach (ChangeClass modChange in changes)
             {
                 if (modChange.ChangeType == "Code")
                 {
-                    File.AppendAllText(modPath + @"\Modification " + modChange.ChangelogCode + " list.txt", "Source object: " + modChange.SourceObject + Environment.NewLine);
-                    File.AppendAllText(modPath + @"\Modification " + modChange.ChangelogCode + " list.txt", "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
-                    File.AppendAllText(modPath + @"\Modification " + modChange.ChangelogCode + " list.txt", modChange.Contents);
-                    File.AppendAllText(modPath + @"\Modification " + modChange.ChangelogCode + " list.txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
+                    File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", "Source object: " + modChange.SourceObject + Environment.NewLine);
+                    File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
+                    File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", modChange.Contents);
+                    File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
                 }
             }
             return true;

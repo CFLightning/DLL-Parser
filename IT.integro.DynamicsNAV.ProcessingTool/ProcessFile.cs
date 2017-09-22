@@ -66,9 +66,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
             foreach (var mod in expectedModifications)
             {
-                string modTrimed = mod;
-                new List<string> { "<", ">", ":", "\"", "/", "\\", "|", "?", "*" }.ForEach(m => modTrimed = modTrimed.Replace(m, ""));
-                objectsToSearch = objectsToSearch.Union(File.ReadLines(modObjPath + modTrimed + ".txt").ToList()).ToList();
+                string modFileName = string.Join("_", mod.Split(Path.GetInvalidFileNameChars()));
+                string modFilePath = modObjPath + modFileName + ".txt";
+                //.Replace(" ", string.Empty)
+                string allText = File.ReadAllText(modFilePath).Replace(" ", string.Empty);
+                objectsToSearch = objectsToSearch.Union(allText.Split('\n')).ToList();
             }
 
             ObjectClassRepository.objectRepository = ObjectClassRepository.objectRepository.Where(o => objectsToSearch.Contains(o.Name)).ToList();

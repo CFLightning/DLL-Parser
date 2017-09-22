@@ -40,15 +40,15 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             beginPatternParts.Add(@"<-+ *" + prefix + modNo + endSymbol);
             beginPatternParts.Add(prefix + modNo + @" *(?i)((begin)|(start))" + endSymbol);
             beginPatternParts.Add(prefix + modNo + @" *(?i)(/S|/B)" + endSymbol);
-            //beginPatternParts.Add(@"START/(\w)*/?(\w)*/" + modNo + endSymbol);
-            beginPatternParts.Add(@"START/(?<mod>[A-Z0-9/\._-]+)" + endSymbol);
+            beginPatternParts.Add(@"START/(?<mod>NAV[A-Z0-9/\._-]+)" + "$");
+            beginPatternParts.Add(@"START/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + endSymbol);
 
             List<string> endPatternParts = new List<string>();
             endPatternParts.Add(@"-+> *" + prefix + modNo + endSymbol);
             endPatternParts.Add(prefix + modNo + @" *(?i)((end)|(stop))" + endSymbol);
             endPatternParts.Add(prefix + modNo + @" *(?i)/E" + endSymbol);
-            //endPatternParts.Add(@"STOP ?/(\w)*/?(\w)*/" + modNo + endSymbol);
-            endPatternParts.Add(@"STOP ?/(?<mod>[A-Z0-9/\._-]+)" + endSymbol);
+            endPatternParts.Add(@"STOP ?/(?<mod>NAV[A-Z0-9/\._-]+)" + "$");
+            endPatternParts.Add(@"STOP ?/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + endSymbol);
 
             List<string> otherPatternParts = new List<string>();
             //otherPatternParts.Add(prefix + modNo + @" *$");
@@ -263,7 +263,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             foreach (var line in codeLines)
             {
                 if (line.StartsWith("OBJECT "))
-                    obj = line.Split(separator, 4)[3].Replace(" ", string.Empty);
+                    obj = line.Split(separator, 4)[3];
                 if (line.Contains(@"//"))
                 {
                     if (CheckIfTagInLine(line))
@@ -272,10 +272,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                         if (!modList.Contains(GetTagedModyfication(line)))
                         {
                             modList.Add(GetTagedModyfication(line));
-                            modContentList.Add("");
+                            modContentList.Add(obj);
+                            continue;
                         }
                         if (!modContentList[modList.IndexOf(GetTagedModyfication(line))].Contains(obj))
-                            modContentList[modList.IndexOf(GetTagedModyfication(line))] += (obj + System.Environment.NewLine);
+                            modContentList[modList.IndexOf(GetTagedModyfication(line))] += (System.Environment.NewLine + obj);
                     }
                 }
             }
@@ -283,9 +284,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             {
                 if (!ContainsRestrictedWords(modList[i]))
                 {
-                    new List<string> { "<", ">", ":", "\"", "/", "\\", "|", "?", "*" }.ForEach(m => modList[i] = modList[i].Replace(m, "")); //Change to cleanfilename
-                    string file = outputPath + modList[i] + ".txt"; 
-                    File.WriteAllText(file, modContentList[i]);
+                    string modFileName = string.Join("_", modList[i].Split(Path.GetInvalidFileNameChars()));
+                    string modFilePath = outputPath + modFileName + ".txt"; 
+                    File.WriteAllText(modFilePath, modContentList[i]);
                 }
             }
             return tagList;
