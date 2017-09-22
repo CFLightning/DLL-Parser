@@ -82,7 +82,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             {
                 foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
                 {
-                    if(obj.changelog.Contains(chg))
+                    if(obj.changelog.GroupBy(x => x.ChangelogCode).Select(grp => grp.First()).ToList().Contains(chg))
                     {
                         File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt", obj.Contents);
                     }
@@ -114,7 +114,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         File.Delete(docPath + @"\" + modification + " documentation file.txt");
                 }
             }
-
+       
             foreach (string modification in expectedModifications)
             {
                 string line;
@@ -122,9 +122,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 StringReader reader = new StringReader(documentation);
                 while (null != (line = reader.ReadLine()))
                 {
-                    if (line.Contains(modification) || (mappingDictionary.ContainsKey(modification) && line.Contains(mappingDictionary[modification])))
+                    if (line.Contains("#" + modification + "#") || (mappingDictionary.ContainsKey(modification) && line.Contains("#" + mappingDictionary[modification] + "#")))
                     {
-                        File.AppendAllText(docPath + @"\" + modification + " documentation file.txt", lineAmount + line.Substring(line.IndexOf("<next>")) + Environment.NewLine);
+                        File.AppendAllText(docPath + @"\" + CleanFileName(modification) + " documentation file.txt", lineAmount + line.Substring(line.IndexOf("<next>")) + Environment.NewLine);
                         lineAmount++;
                     }
                 }
