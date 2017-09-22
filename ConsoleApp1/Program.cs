@@ -7,10 +7,10 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            string allMods = ProcessFile.PassAllModificationTags(@"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt");
-            //Console.WriteLine(ProcessFile.RunProcessing(allMods, @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1", @""));
+            string allMods = ProcessFile.PassAllModificationTags(@"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt");
+            Console.WriteLine(ProcessFile.RunProcessing(allMods, @"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt", @""));
 
-            Console.WriteLine(ProcessFile.RunPreview(allMods, @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt"));
+            //Console.WriteLine(ProcessFile.RunPreview(allMods, @"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt"));
 
             //Console.WriteLine("end");
             Console.ReadKey();
