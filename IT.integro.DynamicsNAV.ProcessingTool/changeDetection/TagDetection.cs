@@ -51,7 +51,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             endPatternParts.Add(@"STOP ?/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + regEnd);
 
             List<string> otherPatternParts = new List<string>();
-            //otherPatternParts.Add(prefix + modNo + @" *$");
+            //otherPatternParts.Add(regPrefix + modNo + @" *$");
             otherPatternParts.Add(regPrefix + regMod + @" *(?i)/S/E$");
 
             Regex rgxBegin, rgxEnd, rgxOther;
@@ -182,6 +182,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 }
             }
 
+            File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagList.txt", tagList);
+            File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagModList.txt", tagModList);
+
             return modList;
         }
 
@@ -272,7 +275,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 {
                     if (CheckIfTagInLine(line))
                     {
-                        tagList.Add(line);
+                        tagList.Add(line.TrimStart(' '));
                         if (!modList.Contains(GetTagedModyfication(line)))
                         {
                             modList.Add(GetTagedModyfication(line));
