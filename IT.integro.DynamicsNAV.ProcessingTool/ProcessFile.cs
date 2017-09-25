@@ -13,13 +13,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 {
     public class ProcessFile
     {
-        public static string RunProcessing(string expectedModifications, string inputFilePath, string mappingFilePath, bool highAccuracy) //highAccuracy = true -> find more tags, even bad ones
+        public static string RunProcessing(string expectedModifications, string inputFilePath, string mappingFilePath, bool highAccuracy, string documentationModifications) //highAccuracy = true -> find more tags, even bad ones
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
             DirectoryInfo directory = Directory.CreateDirectory(outputPath);
 
-            List<string> expModifications = PrepareProcessing(expectedModifications);
+            List<string> expModifications = PrepareExpProcessing(expectedModifications);
+            List<string> docModifications = PrepareDocProcessing(documentationModifications);
 
             FileSplitter.SplitFile(inputFilePath);
             IndentationChecker.CheckIndentations();
@@ -81,9 +82,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return objectsToSearch;
         }
 
-        public static List<string> PrepareProcessing(string expectedModifications)
+        public static List<string> PrepareExpProcessing(string expectedModifications)
         {
             return expectedModifications.Split(',').ToList();
+        }
+
+        public static List<string> PrepareDocProcessing(string documentationModifications)
+        {
+            return documentationModifications.Split(',').ToList();
         }
 
         public static string PassAllModificationTags(string inputPath, bool highAccuracy)
