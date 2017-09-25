@@ -44,14 +44,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             beginPatternParts.Add(regITPrefix + regMod + @" *(?i)((begin)|(start))" + regEnd);
             beginPatternParts.Add(regITPrefix + regMod + @" *(?i)(\/S|\/B)" + regEnd);
             beginPatternParts.Add(@"START\/" + regModNAV + regEnd);
-            beginPatternParts.Add(@"START\/(\w)*\/(\w)*\/" + regModNoSlash + regEnd);
+            beginPatternParts.Add(@"START\/(\w*\/)*" + regModNoSlash + regEnd);
 
             List<string> endPatternParts = new List<string>();
             endPatternParts.Add(@"-+> *" + regITPrefix + regMod + regEnd);
             endPatternParts.Add(regITPrefix + regMod + @" *(?i)((end)|(stop))" + regEnd);
             endPatternParts.Add(regITPrefix + regMod + @" *(?i)/E" + regEnd);
             endPatternParts.Add(@"STOP ?\/" + regModNAV + regEnd);
-            endPatternParts.Add(@"STOP ?\/(\w)*\/(\w)*\/" + regModNoSlash + regEnd);
+            endPatternParts.Add(@"STOP ?\/(\w*\/)*" + regModNoSlash + regEnd);
 
             List<string> otherPatternParts = new List<string>();
             otherPatternParts.Add(regITPrefix + regMod + @" *(?i)\/S\/E$");
@@ -278,6 +278,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 File.Delete(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt");
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\Modification Objects List\";
             DirectoryInfo directory = Directory.CreateDirectory(outputPath);
+            saveTool.SaveTool.SetFullPermission(ref directory);
+
             foreach (FileInfo file in directory.GetFiles())
             {
                 file.Delete();
