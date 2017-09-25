@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 {
@@ -24,6 +26,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
         {
             string modPath = path + "Modifications";
             DirectoryInfo directory = Directory.CreateDirectory(modPath);
+
+            // Directory full permissions for everyone
+            var sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            var account = (NTAccount)sid.Translate(typeof(NTAccount));
+            DirectorySecurity dSecurity = directory.GetAccessControl();
+            dSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.NoPropagateInherit, AccessControlType.Allow));
+            directory.SetAccessControl(dSecurity);
+
             List<ChangeClass> changes = ChangeClassRepository.changeRepository.FindAll(x => modifications.Contains(x.ChangelogCode));
 
             foreach (ChangeClass chg in changes)
@@ -33,6 +43,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
                 string detailPath = modPath + @"\Details\" + CleanFileName(chg.ChangelogCode);
                 DirectoryInfo directoryDetail = Directory.CreateDirectory(detailPath);
+                directoryDetail.SetAccessControl(dSecurity);
+
                 if (File.Exists(detailPath + @"\" + chg.SourceObject + "#" + chg.Location + @".txt"))
                     File.Delete(detailPath + @"\" + chg.SourceObject + "#" + chg.Location + @".txt");
 

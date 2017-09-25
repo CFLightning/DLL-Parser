@@ -10,14 +10,18 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static Regex[] tagPatterns;
         static List<Regex[]> tagPairPattern;
         static string regMod;
-        static string regPrefix;
-        static string regEnd;
-        static string regDate;
+        static string regModNoSlash;
+        static string regModNAV;
+        static string regITPrefix = @"(IT\/)?";
 
         static TagDetection()
         {
             tagPatterns = new Regex[3];
             tagPairPattern = new List<Regex[]>();
+            regMod = @"(?<mod>[A-Z0-9\/._-]+)";
+            regModNoSlash = @"(?<mod>[A-Z0-9._-]+)";
+            regModNAV = @"(?<mod>NAV[A-Z0-9\/._-]+)";
+            regITPrefix = @"(IT\/)?";
             DefinePatterns();
         }
 
@@ -25,33 +29,32 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static private Regex[] DefinePatterns()
         {
-            string lineFrontComment = @" *// *";                        // BEGIN,AND
-            string lineBackComment = @" *[^\s/{2}]+.*// *";             // OTHER
+            string lineFrontComment = @"^\s*\/\/\s*";                        // BEGIN,AND
+            string lineBackComment = @" *[^\s\/{2}]+.*\/\/ *";             // OTHER
 
-            regDate = @"(\d{2,4}.\d{2}.\d{2,4})?";
-            regMod = @"(?<mod>[A-Z0-9\._-]+)";
-            //regITPrefix = @"(IT/)?";
-            regPrefix = @"((\w)*/)?";
-            regEnd = @".?$?";
+            //string regDate = @"(\d{2,4}.\d{2}.\d{2,4})?";
+            //string regPrefix = @"((\w)*\/)?";
+            //string regDigitalSuffix = @"(\/\d*)?";
+            string regEnd = @".?$";
 
             List<Regex[]> PatternList = new List<Regex[]>();
 
             List<string> beginPatternParts = new List<string>();
-            beginPatternParts.Add(@"<-+ *" + regPrefix + regMod + regEnd);
-            beginPatternParts.Add(regPrefix + regMod + @" *(?i)((begin)|(start))" + regEnd);
-            beginPatternParts.Add(regPrefix + regMod + @" *(?i)(/S|/B)" + regEnd);
-            beginPatternParts.Add(@"START/(?<mod>NAV[A-Z0-9/\._-]+)" + regEnd);
-            beginPatternParts.Add(@"START/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + regEnd);
+            beginPatternParts.Add(@"<-+ *" + regITPrefix + regMod + regEnd);
+            beginPatternParts.Add(regITPrefix + regMod + @" *(?i)((begin)|(start))" + regEnd);
+            beginPatternParts.Add(regITPrefix + regMod + @" *(?i)(\/S|\/B)" + regEnd);
+            beginPatternParts.Add(@"START\/" + regModNAV + regEnd);
+            beginPatternParts.Add(@"START\/(\w)*\/(\w)*\/" + regModNoSlash + regEnd);
 
             List<string> endPatternParts = new List<string>();
-            endPatternParts.Add(@"-+> *" + regPrefix + regMod + regEnd);
-            endPatternParts.Add(regPrefix + regMod + @" *(?i)((end)|(stop))" + regEnd);
-            endPatternParts.Add(regPrefix + @"((\w)*/)?" + regMod + @" *(?i)/E" + regEnd);
-            endPatternParts.Add(@"STOP ?/(?<mod>NAV[A-Z0-9/\._-]+)" + regEnd);
-            endPatternParts.Add(@"STOP ?/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + regEnd);
+            endPatternParts.Add(@"-+> *" + regITPrefix + regMod + regEnd);
+            endPatternParts.Add(regITPrefix + regMod + @" *(?i)((end)|(stop))" + regEnd);
+            endPatternParts.Add(regITPrefix + regMod + @" *(?i)/E" + regEnd);
+            endPatternParts.Add(@"STOP ?\/" + regModNAV + regEnd);
+            endPatternParts.Add(@"STOP ?\/(\w)*\/(\w)*\/" + regModNoSlash + regEnd);
 
             List<string> otherPatternParts = new List<string>();
-            otherPatternParts.Add(regPrefix + regMod + @" *(?i)/S/E$");
+            otherPatternParts.Add(regITPrefix + regMod + @" *(?i)\/S\/E$");
 
             Regex rgxBegin, rgxEnd, rgxOther;
             Regex[] rgxPair;
@@ -94,8 +97,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         {
             string lineBackComment = @" *[^\s/{2}]+.*// *";
             List<string> otherPatternParts = new List<string>();
-            otherPatternParts.Add(regPrefix + regMod + @" *$");
-            otherPatternParts.Add(regPrefix + regMod + @" *(?i)/S/E$");
+            otherPatternParts.Add(regITPrefix + regMod + @" *$");
+            otherPatternParts.Add(regITPrefix + regMod + @" *(?i)/S/E$");
             string otherPattern = "(" + lineBackComment + otherPatternParts[0] + ")";
             for (int i = 1; i < otherPatternParts.Count; i++)
                 otherPattern += "|(" + lineBackComment + otherPatternParts[i] + ")";
@@ -105,17 +108,22 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static public Regex GetFittingEndPattern(string beginTagLine)
         {
+            string mod = GetTagedModyfication(beginTagLine);
             foreach (var patternPair in tagPairPattern)
             {
                 if (patternPair[(int)Marks.BEGIN].IsMatch(beginTagLine))
                 {
                     string patternString = patternPair[(int)Marks.END].ToString();
-                    string mod = GetTagedModyfication(beginTagLine);
-                    patternString = patternString.Replace(regMod, mod);
+                    if (patternPair[(int)Marks.BEGIN].ToString().Contains(regMod))
+                        patternString = patternString.Replace(regMod, mod);
+                    else if (patternPair[(int)Marks.BEGIN].ToString().Contains(regModNAV))
+                        patternString = patternString.Replace(regModNAV, mod);
+                    else if (patternPair[(int)Marks.BEGIN].ToString().Contains(regModNoSlash))
+                        patternString = patternString.Replace(regModNoSlash, mod);
                     return new Regex(patternString);
                 }
             }
-            return new Regex(@"");
+            return new Regex(mod);
         }
 
         static public bool CheckIfTagInLine(string text)
@@ -227,7 +235,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             };
             foreach(string word in RestrictedWords)
             {
-                if (tag.Contains(word))
+                if (tag == word)
                     return true;
             }
             return false;

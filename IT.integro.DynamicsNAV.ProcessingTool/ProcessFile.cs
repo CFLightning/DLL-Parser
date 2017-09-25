@@ -81,9 +81,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             ObjectClassRepository.objectRepository = ObjectClassRepository.objectRepository.Where(o => objectsToSearch.Contains(o.Name)).ToList();
             return objectsToSearch;
         }
-
+        
         public static List<string> PrepareExpProcessing(string expectedModifications)
         {
+            if (expectedModifications == "")
+                return new List<string>();
             return expectedModifications.Split(',').ToList();
         }
 
