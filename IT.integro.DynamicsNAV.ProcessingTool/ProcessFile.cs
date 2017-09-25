@@ -8,6 +8,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
+using System.Security.AccessControl;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool
 {
@@ -18,6 +20,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             if (highAccuracy) TagDetection.SetHighAccuracy();
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
             DirectoryInfo directory = Directory.CreateDirectory(outputPath);
+            SaveTool.SetFullPermission(ref directory);
 
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
             List<string> docModifications = PrepareDocProcessing(documentationModifications);
@@ -43,26 +46,27 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         }
 
     public static string RunPreview(string expectedModifications, string inputFilePath, bool highAccuracy)
-    {
-        if (highAccuracy) TagDetection.SetHighAccuracy();
-        string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
-        DirectoryInfo directory = Directory.CreateDirectory(outputPath);
+        {
+            if (highAccuracy) TagDetection.SetHighAccuracy();
+            string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
+            DirectoryInfo directory = Directory.CreateDirectory(outputPath);
+            SaveTool.SetFullPermission(ref directory);
 
-        List<string> expModifications = PrepareExpProcessing(expectedModifications);
-        FileSplitter.SplitFile(inputFilePath);
-        //IndentationChecker.CheckIndentations();
-        reduceObjects(expModifications);
-        if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
-            return "ERROR404";
-        ModificationCleanerTool.CleanChangeCode();
-        //DocumentationTrigger.UpdateDocumentationTrigger();
-        SaveTool.SaveChangesToFiles(outputPath, expModifications);
-        //SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
-        SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
-        ChangeClassRepository.changeRepository.Clear();
-        ObjectClassRepository.objectRepository.Clear();
-        return outputPath;
-    }
+            List<string> expModifications = PrepareExpProcessing(expectedModifications);
+            FileSplitter.SplitFile(inputFilePath);
+            //IndentationChecker.CheckIndentations();
+            reduceObjects(expModifications);
+            if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
+                return "ERROR404";
+            ModificationCleanerTool.CleanChangeCode();
+            //DocumentationTrigger.UpdateDocumentationTrigger();
+            SaveTool.SaveChangesToFiles(outputPath, expModifications);
+            //SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
+            SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
+            ChangeClassRepository.changeRepository.Clear();
+            ObjectClassRepository.objectRepository.Clear();
+            return outputPath;
+        }
 
         private static List<string> reduceObjects(List<string> expectedModifications)
         {

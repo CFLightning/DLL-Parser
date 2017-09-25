@@ -8,7 +8,7 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             //string allMods = ProcessFile.PassAllModificationTags(@"C:\Users\Administrator\Documents\ObjAllTeutonia_All.txt", true);
-            string path = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
+            string path = @"C:\FILES\Output\Objects\Codeunit 5814 UndoReturnShipmentLine .txt";
             string allMods = ProcessFile.PassAllModificationTags(path, true);
             Console.WriteLine(ProcessFile.RunProcessing(allMods, path, @"", true, allMods));
 
