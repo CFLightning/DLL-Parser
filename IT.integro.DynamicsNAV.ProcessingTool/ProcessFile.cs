@@ -48,7 +48,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
         DirectoryInfo directory = Directory.CreateDirectory(outputPath);
 
-        List<string> expModifications = PrepareProcessing(expectedModifications);
+        List<string> expModifications = PrepareExpProcessing(expectedModifications);
         FileSplitter.SplitFile(inputFilePath);
         //IndentationChecker.CheckIndentations();
         reduceObjects(expModifications);
