@@ -28,7 +28,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             return "    Version List=" + versionString + ";";
         }
 
-        public static bool UpdateDocumentationTrigger()
+        public static bool UpdateDocumentationTrigger(List<string> docModifications)
         {
 
             List<string> locationList = new List<string>();
@@ -109,7 +109,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         {
                             writer.WriteLine("      Automated Documentation");
                         }
-                        foreach (string item in TagDetection.GetModyficationList(obj.Contents))
+                        foreach (string item in docModifications) //TagDetection.GetModyficationList(obj.Contents))
                         {
                             int actionCounter = 0;
                             writer.WriteLine("      #" + item + "#");

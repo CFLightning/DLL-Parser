@@ -30,7 +30,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 return "ERROR404";
             }
             ModificationCleanerTool.CleanChangeCode();
-            DocumentationTrigger.UpdateDocumentationTrigger();
+            DocumentationTrigger.UpdateDocumentationTrigger(docModifications);
             //SaveTool.SaveObjectsToFiles(outputPath);
             SaveTool.SaveChangesToFiles(outputPath, expModifications);
             SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
