@@ -51,7 +51,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             endPatternParts.Add(@"STOP ?/(\w)*/(\w)*/(?<mod>[A-Z0-9/\._-]+)" + regEnd);
 
             List<string> otherPatternParts = new List<string>();
-            //otherPatternParts.Add(regPrefix + modNo + @" *$");
             otherPatternParts.Add(regPrefix + regMod + @" *(?i)/S/E$");
 
             Regex rgxBegin, rgxEnd, rgxOther;
@@ -89,6 +88,19 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             tagPatterns[(int)Marks.OTHER] = rgxOther;
 
             return tagPatterns;
+        }
+
+        static public void SetHighAccuracy()
+        {
+            string lineBackComment = @" *[^\s/{2}]+.*// *";
+            List<string> otherPatternParts = new List<string>();
+            otherPatternParts.Add(regPrefix + regMod + @" *$");
+            otherPatternParts.Add(regPrefix + regMod + @" *(?i)/S/E$");
+            string otherPattern = "(" + lineBackComment + otherPatternParts[0] + ")";
+            for (int i = 1; i < otherPatternParts.Count; i++)
+                otherPattern += "|(" + lineBackComment + otherPatternParts[i] + ")";
+            Regex rgxOther = new Regex(otherPattern);
+            tagPatterns[(int)Marks.OTHER] = rgxOther;
         }
 
         static public Regex GetFittingEndPattern(string beginTagLine)

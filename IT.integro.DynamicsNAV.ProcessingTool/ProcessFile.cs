@@ -13,8 +13,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 {
     public class ProcessFile
     {
-        public static string RunProcessing(string expectedModifications, string inputFilePath, string mappingFilePath)
+        public static string RunProcessing(string expectedModifications, string inputFilePath, string mappingFilePath, bool highAccuracy) //highAccuracy = true -> find more tags, even bad ones
         {
+            if (highAccuracy) TagDetection.SetHighAccuracy();
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
             DirectoryInfo directory = Directory.CreateDirectory(outputPath);
 
@@ -22,6 +23,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
             FileSplitter.SplitFile(inputFilePath);
             IndentationChecker.CheckIndentations();
+            
             if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
             {
                 return "ERROR404";
@@ -39,8 +41,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-    public static string RunPreview(string expectedModifications, string inputFilePath)
+    public static string RunPreview(string expectedModifications, string inputFilePath, bool highAccuracy)
     {
+        if (highAccuracy) TagDetection.SetHighAccuracy();
         string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
         DirectoryInfo directory = Directory.CreateDirectory(outputPath);
 
@@ -78,13 +81,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return objectsToSearch;
         }
 
-public static List<string> PrepareProcessing(string expectedModifications)
+        public static List<string> PrepareProcessing(string expectedModifications)
         {
             return expectedModifications.Split(',').ToList();
         }
 
-        public static string PassAllModificationTags(string inputPath)
+        public static string PassAllModificationTags(string inputPath, bool highAccuracy)
         {
+            if (highAccuracy) TagDetection.SetHighAccuracy();
             return TagDetection.GetModificationString(File.ReadAllText(inputPath));
         }
     }

@@ -182,7 +182,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                     }
                 }
             }
-            if(checklist.Contains(false))
+            if (checklist.Contains(false))
             {
                 return false;
             }
