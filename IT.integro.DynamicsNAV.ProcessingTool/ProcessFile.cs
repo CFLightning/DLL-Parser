@@ -95,6 +95,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
         public static List<string> PrepareDocProcessing(string documentationModifications)
         {
+            if (documentationModifications == "")
+                return new List<string>();
             return documentationModifications.Split(',').ToList();
         }
 

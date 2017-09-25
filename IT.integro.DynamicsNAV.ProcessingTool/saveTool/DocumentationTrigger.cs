@@ -112,7 +112,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         foreach (string item in docModifications) //TagDetection.GetModyficationList(obj.Contents))
                         {
                             int actionCounter = 0;
-                            writer.WriteLine("      #" + item + "#");
+                            if(TagDetection.GetModyficationList(obj.Contents).Contains(item))
+                            {
+                                writer.WriteLine("      #" + item + "#");
+                            }
                             locationList = new List<string>();
                             foreach (ChangeClass change in obj.Changelog)
                             {
