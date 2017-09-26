@@ -71,20 +71,19 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         private static List<string> reduceObjects(List<string> expectedModifications)
         {
             List<string> objectsToSearch = new List<string>();
-            string modObjPath = Path.GetTempPath() + @"NAVCommentTool\Modification Objects List\";
 
             foreach (var mod in expectedModifications)
             {
                 string modFileName = string.Join("_", mod.Split(Path.GetInvalidFileNameChars()));
-                string modFilePath = modObjPath + modFileName + ".txt";
-                string allText = File.ReadAllText(modFilePath).Replace(" ", string.Empty);
+                string modFilePath = AuxiliaryRepository.pathObjWithMod + modFileName + ".txt";
+                string allText = File.ReadAllText(modFilePath);//.Replace(" ", string.Empty);
                 objectsToSearch = objectsToSearch.Union(allText.Split('\n')).ToList();
+            }
                 char[] separator = new char[] { ' ' };
                 for (int i = 0; i < objectsToSearch.Count; i++)
                 {
-                    objectsToSearch[i] = objectsToSearch[i].Split(separator, 4)[3];
+                    objectsToSearch[i] = objectsToSearch[i].Split(separator, 4)[3].Replace(" ", string.Empty);
                 }
-            }
 
             ObjectClassRepository.objectRepository = ObjectClassRepository.objectRepository.Where(o => objectsToSearch.Contains(o.Name)).ToList();
             return objectsToSearch;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IT.integro.DynamicsNAV.ProcessingTool.parserClass;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
 {
-    static public class AuxiliaryRepository
+    static class AuxiliaryRepository
     {
         static public List<string> abandonedList = new List<string>();
         static public List<string> foundTagList = new List<string>();
@@ -20,8 +21,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
         static string pathAbandoned = Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt";
         static string pathFoundTag = Path.GetTempPath() + @"NAVCommentTool\tagList.txt";
         static string pathModInTag = Path.GetTempPath() + @"NAVCommentTool\tagModList.txt";
-        static string pathModInObj = Path.GetTempPath() + @"NAVCommentTool\Modifications in Object\";
-        static string pathObjWithMod = Path.GetTempPath() + @"NAVCommentTool\Objects with Modification\";
+        static public string pathModInObj = Path.GetTempPath() + @"NAVCommentTool\Modifications in Object\";
+        static public string pathObjWithMod = Path.GetTempPath() + @"NAVCommentTool\Objects with Modification\";
 
         static public void SaveToFiles()
         {
@@ -60,6 +61,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
                 Directory.Delete(pathObjWithMod, true);
             if (Directory.Exists(pathModInObj))
                 Directory.Delete(pathModInObj, true);
+        }
+
+        static public List<string> GetModificationsInObject(ObjectClass obj)
+        {
+            string objectHeaderLine = obj.Contents.Substring(0, obj.Contents.IndexOf(Environment.NewLine));
+            int idx = objList.FindIndex(x => x == objectHeaderLine);
+            return objContentList[idx].Replace("\r", "").Split('\n').ToList();
         }
     }
 

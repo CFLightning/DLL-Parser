@@ -285,7 +285,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         {
             char[] separator = new char[] { ' ' };
             if (obj == null)
-                obj = codeLines[0];//.Split(separator, 4)[3];
+                obj = codeLines[0];//.Split(separator, 2)[1];
             List<string> tagList = new List<string>();
 
             foreach (var line in codeLines)
@@ -322,8 +322,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 }
                 else if (line.StartsWith("OBJECT "))
                 {
-                    AuxRepo.abandonedList.Add(line);
-                    obj = line;//.Split(separator, 4)[3];
+                    obj = line;//.Split(separator, 2)[1];
+                    AuxRepo.abandonedList.Add(obj);
                 }
             }
             
