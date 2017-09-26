@@ -77,9 +77,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             {
                 string modFileName = string.Join("_", mod.Split(Path.GetInvalidFileNameChars()));
                 string modFilePath = modObjPath + modFileName + ".txt";
-                //.Replace(" ", string.Empty)
                 string allText = File.ReadAllText(modFilePath).Replace(" ", string.Empty);
                 objectsToSearch = objectsToSearch.Union(allText.Split('\n')).ToList();
+                char[] separator = new char[] { ' ' };
+                for (int i = 0; i < objectsToSearch.Count; i++)
+                {
+                    objectsToSearch[i] = objectsToSearch[i].Split(separator, 4)[3];
+                }
             }
 
             ObjectClassRepository.objectRepository = ObjectClassRepository.objectRepository.Where(o => objectsToSearch.Contains(o.Name)).ToList();
@@ -103,7 +107,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         public static string PassAllModificationTags(string inputPath, bool highAccuracy)
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
-            return TagDetection.GetModificationString(File.ReadAllText(inputPath));
+            return TagDetection.GetModificationString(inputPath);
         }
     }
 }

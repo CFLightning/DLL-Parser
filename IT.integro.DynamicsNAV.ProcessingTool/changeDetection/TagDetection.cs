@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using AuxRepo = IT.integro.DynamicsNAV.ProcessingTool.repositories.AuxiliaryRepository;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 {
@@ -128,11 +129,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static public bool CheckIfTagInLine(string text)
         {
-            if (tagPatterns[(int)Marks.BEGIN].IsMatch(text))
-                return true;
-            else if (tagPatterns[(int)Marks.END].IsMatch(text))
-                return true;
-            else if (tagPatterns[(int)Marks.OTHER].IsMatch(text))
+            if (tagPatterns[(int)Marks.BEGIN].IsMatch(text) || tagPatterns[(int)Marks.END].IsMatch(text) || tagPatterns[(int)Marks.OTHER].IsMatch(text))
                 return true;
             else
                 return false;
@@ -202,11 +199,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 }
             }
 
-            if (saveTagList)
-            {
-                File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagList.txt", tagList);
-                File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagModList.txt", tagModList);
-            }
+            AuxRepo.foundTagList = AuxRepo.foundTagList.Concat(tagList).ToList();
+            AuxRepo.modInTagList = AuxRepo.modInTagList.Concat(tagModList).ToList();
 
             return modList;
         }
@@ -265,65 +259,74 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return ret.Union(GetFieldDescriptionTagList(code)).ToList();
         }
 
-        static public string GetModificationString(string code)
+        static public string GetModificationString(string path)
         {
-            string[] codeLines = code.Replace("\r", "").Split('\n');
-            List<string> mods = FindModsInTags(FindTagsAndGenerateList(codeLines),true);
+            int blockSize = 1000000;
+            int blockCount = File.ReadLines(path).Count() / blockSize;
+            List<string> mods = new List<string>();
+            string[] lines;
+
+            for (int i = 0; i < blockCount; i++)
+            {
+                lines = File.ReadLines(path).Skip(blockSize * i).Take(blockSize).ToArray();
+                mods = mods.Union(FindModsInTags(FindTagsAndGenerateList(lines), true)).ToList();
+            }
+            lines = File.ReadAllLines(path).Skip(blockCount * blockSize).ToArray();
+            mods = mods.Union(FindModsInTags(FindTagsAndGenerateList(lines), true)).ToList();
+
+            AuxRepo.DeleteFiles();
+            AuxRepo.SaveToFiles();
+            
             return string.Join(",", mods.ToArray());
         }
 
+        static string obj;
         static private List<string> FindTagsAndGenerateList(string[] codeLines)
         {
-            if (File.Exists(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt"))
-                File.Delete(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt");
-            string outputPath = Path.GetTempPath() + @"NAVCommentTool\Modification Objects List\";
-            DirectoryInfo directory = Directory.CreateDirectory(outputPath);
-            saveTool.SaveTool.SetFullPermission(ref directory);
-
-            foreach (FileInfo file in directory.GetFiles())
-            {
-                file.Delete();
-            }
             char[] separator = new char[] { ' ' };
-            string obj = codeLines[0].Split(separator, 4)[3];
-            List<string> modContentList = new List<string>();
-            List<string> modList = new List<string>();
-
+            if (obj == null)
+                obj = codeLines[0];//.Split(separator, 4)[3];
             List<string> tagList = new List<string>();
+
             foreach (var line in codeLines)
             {
-                if (line.StartsWith("OBJECT "))
-                {
-                    File.AppendAllText(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt", line + System.Environment.NewLine);
-                    obj = line.Split(separator, 4)[3];
-                }
                 if (line.Contains(@"//"))
                 {
                     if (CheckIfTagInLine(line))
                     {
                         tagList.Add(line.TrimStart(' '));
-                        if (!modList.Contains(GetTagedModyfication(line)))
+                        string mod = GetTagedModyfication(line);
+                        if (!ContainsRestrictedWords(mod))
                         {
-                            modList.Add(GetTagedModyfication(line));
-                            modContentList.Add(obj);
-                            continue;
+                            if (!AuxRepo.modList.Contains(mod))
+                            {
+                                AuxRepo.modList.Add(mod);
+                                AuxRepo.modContentList.Add(obj);
+                                continue;
+                            }
+                            if (!AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)].Contains(obj))
+                                AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)] += (System.Environment.NewLine + obj);
+
+                            if (!AuxRepo.objList.Contains(obj))
+                            {
+                                AuxRepo.objList.Add(obj);
+                                AuxRepo.objContentList.Add(mod);
+                                continue;
+                            }
+                            if (!AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)].Contains(mod))
+                                AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)] += (System.Environment.NewLine + mod);
                         }
-                        if (!modContentList[modList.IndexOf(GetTagedModyfication(line))].Contains(obj))
-                            modContentList[modList.IndexOf(GetTagedModyfication(line))] += (System.Environment.NewLine + obj);
                     }
                     else
-                        File.AppendAllText(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt", "\t" + line.TrimStart(' ') + System.Environment.NewLine);
+                        AuxRepo.abandonedList.Add("\t" + line.TrimStart(' '));
                 }
-            }
-            for (int i = 0; i<modList.Count; i++)
-            {
-                if (!ContainsRestrictedWords(modList[i]))
+                else if (line.StartsWith("OBJECT "))
                 {
-                    string modFileName = string.Join("_", modList[i].Split(Path.GetInvalidFileNameChars()));
-                    string modFilePath = outputPath + modFileName + ".txt"; 
-                    File.WriteAllText(modFilePath, modContentList[i]);
+                    AuxRepo.abandonedList.Add(line);
+                    obj = line;//.Split(separator, 4)[3];
                 }
             }
+            
             return tagList;
           }
 
