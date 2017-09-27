@@ -271,7 +271,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             while ((line = inputfile.ReadLine()) != null)
             {
                 string[] codeLine = line.Split('\n'); //Replace("\r", "").
-                tags.AddRange(FindTags(codeLine));
+                tags.AddRange(FindTagsAndGenerateList(codeLine));
             }
             mods.AddRange(FindModsInTags(tags));
             uniqueMods = mods.GroupBy(x => x).Select(grp => grp.First()).ToList(); //unique
@@ -290,8 +290,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             //lines = File.ReadAllLines(path).Skip(blockCount * blockSize).ToArray();
             //mods = mods.Union(FindModsInTags(FindTagsAndGenerateList(lines), true)).ToList();
 
-            //AuxRepo.DeleteFiles();
-            //AuxRepo.SaveToFiles();
+            AuxRepo.DeleteFiles();
+            AuxRepo.SaveToFiles();
             
 
             return string.Join(",", mods.ToArray());
