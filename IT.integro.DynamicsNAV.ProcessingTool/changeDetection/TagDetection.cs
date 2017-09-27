@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using AuxRepo = IT.integro.DynamicsNAV.ProcessingTool.repositories.AuxiliaryRepository;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 {
@@ -45,14 +46,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             beginPatternParts.Add(regITPrefix + regMod + @" *(?i)((begin)|(start))" + regEnd);
             beginPatternParts.Add(regITPrefix + regMod + @" *(?i)(\/S|\/B)" + regEnd);
             beginPatternParts.Add(@"START\/" + regModNAV + regEnd);
-            beginPatternParts.Add(@"START\/(\w)*\/(\w)*\/" + regModNoSlash + regEnd);
+            beginPatternParts.Add(@"START\/(\w*\/)*" + regModNoSlash + regEnd);
 
             List<string> endPatternParts = new List<string>();
             endPatternParts.Add(@"-+> *" + regITPrefix + regMod + regEnd);
             endPatternParts.Add(regITPrefix + regMod + @" *(?i)((end)|(stop))" + regEnd);
             endPatternParts.Add(regITPrefix + regMod + @" *(?i)/E" + regEnd);
             endPatternParts.Add(@"STOP ?\/" + regModNAV + regEnd);
-            endPatternParts.Add(@"STOP ?\/(\w)*\/(\w)*\/" + regModNoSlash + regEnd);
+            endPatternParts.Add(@"STOP ?\/(\w*\/)*" + regModNoSlash + regEnd);
 
             List<string> otherPatternParts = new List<string>();
             otherPatternParts.Add(regITPrefix + regMod + @" *(?i)\/S\/E$");
@@ -129,11 +130,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static public bool CheckIfTagInLine(string text)
         {
-            if (tagPatterns[(int)Marks.BEGIN].IsMatch(text))
-                return true;
-            else if (tagPatterns[(int)Marks.END].IsMatch(text))
-                return true;
-            else if (tagPatterns[(int)Marks.OTHER].IsMatch(text))
+            if (tagPatterns[(int)Marks.BEGIN].IsMatch(text) || tagPatterns[(int)Marks.END].IsMatch(text) || tagPatterns[(int)Marks.OTHER].IsMatch(text))
                 return true;
             else
                 return false;
@@ -203,11 +200,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 }
             }
 
-            if (saveTagList)
-            {
-                File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagList.txt", tagList);
-                File.WriteAllLines(Path.GetTempPath() + @"NAVCommentTool\tagModList.txt", tagModList);
-            }
+            AuxRepo.foundTagList = AuxRepo.foundTagList.Concat(tagList).ToList();
+            AuxRepo.modInTagList = AuxRepo.modInTagList.Concat(tagModList).ToList();
 
             return modList;
         }
@@ -282,65 +276,74 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             mods.AddRange(FindModsInTags(tags));
             uniqueMods = mods.GroupBy(x => x).Select(grp => grp.First()).ToList(); //unique
             inputfile.Close();
-            return string.Join(",", mods.ToArray());
-           
 
-            //string[] codeLines = code.Replace("\r", "").Split('\n');
-            //List<string> mods = FindModsInTags(FindTags(codeLines));//FindTagsAndGenerateList(codeLines),true);
-            //return string.Join(",", mods.ToArray());
-            return "";
+            //int blockSize = 1000000;
+            //int blockCount = File.ReadLines(path).Count() / blockSize;
+            //List<string> mods = new List<string>();
+            //string[] lines;
+
+            //for (int i = 0; i < blockCount; i++)
+            //{
+            //    lines = File.ReadLines(path).Skip(blockSize * i).Take(blockSize).ToArray();
+            //    mods = mods.Union(FindModsInTags(FindTagsAndGenerateList(lines), true)).ToList();
+            //}
+            //lines = File.ReadAllLines(path).Skip(blockCount * blockSize).ToArray();
+            //mods = mods.Union(FindModsInTags(FindTagsAndGenerateList(lines), true)).ToList();
+
+            //AuxRepo.DeleteFiles();
+            //AuxRepo.SaveToFiles();
+            
+
+            return string.Join(",", mods.ToArray());
         }
 
+        static string obj;
         static private List<string> FindTagsAndGenerateList(string[] codeLines)
         {
-            if (File.Exists(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt"))
-                File.Delete(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt");
-            string outputPath = Path.GetTempPath() + @"NAVCommentTool\Modification Objects List\";
-            DirectoryInfo directory = Directory.CreateDirectory(outputPath);
-            foreach (FileInfo file in directory.GetFiles())
-            {
-                file.Delete();
-            }
             char[] separator = new char[] { ' ' };
-            string obj = codeLines[0].Split(separator, 4)[3];
-            List<string> modContentList = new List<string>();
-            List<string> modList = new List<string>();
-
+            if (obj == null)
+                obj = codeLines[0];//.Split(separator, 2)[1];
             List<string> tagList = new List<string>();
+
             foreach (var line in codeLines)
             {
-                if (line.StartsWith("OBJECT "))
-                {
-                    File.AppendAllText(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt", line + System.Environment.NewLine);
-                    obj = line.Split(separator, 4)[3];
-                }
                 if (line.Contains(@"//"))
                 {
                     if (CheckIfTagInLine(line))
                     {
                         tagList.Add(line.TrimStart(' '));
-                        if (!modList.Contains(GetTagedModyfication(line)))
+                        string mod = GetTagedModyfication(line);
+                        if (!ContainsRestrictedWords(mod))
                         {
-                            modList.Add(GetTagedModyfication(line));
-                            modContentList.Add(obj);
-                            continue;
+                            if (!AuxRepo.modList.Contains(mod))
+                            {
+                                AuxRepo.modList.Add(mod);
+                                AuxRepo.modContentList.Add(obj);
+                                continue;
+                            }
+                            if (!AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)].Contains(obj))
+                                AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)] += (System.Environment.NewLine + obj);
+
+                            if (!AuxRepo.objList.Contains(obj))
+                            {
+                                AuxRepo.objList.Add(obj);
+                                AuxRepo.objContentList.Add(mod);
+                                continue;
+                            }
+                            if (!AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)].Contains(mod))
+                                AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)] += (System.Environment.NewLine + mod);
                         }
-                        if (!modContentList[modList.IndexOf(GetTagedModyfication(line))].Contains(obj))
-                            modContentList[modList.IndexOf(GetTagedModyfication(line))] += (System.Environment.NewLine + obj);
                     }
                     else
-                        File.AppendAllText(Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt", "\t" + line.TrimStart(' ') + System.Environment.NewLine);
+                        AuxRepo.abandonedList.Add("\t" + line.TrimStart(' '));
                 }
-            }
-            for (int i = 0; i<modList.Count; i++)
-            {
-                if (!ContainsRestrictedWords(modList[i]))
+                else if (line.StartsWith("OBJECT "))
                 {
-                    string modFileName = string.Join("_", modList[i].Split(Path.GetInvalidFileNameChars()));
-                    string modFilePath = outputPath + modFileName + ".txt"; 
-                    File.WriteAllText(modFilePath, modContentList[i]);
+                    obj = line;//.Split(separator, 2)[1];
+                    AuxRepo.abandonedList.Add(obj);
                 }
             }
+            
             return tagList;
           }
 

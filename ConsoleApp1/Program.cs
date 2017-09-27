@@ -9,12 +9,9 @@ namespace ConsoleApp1
         {
 
             //string path = @"C:\FILES\Output\Objects\Codeunit 5814 UndoReturnShipmentLine .txt";
-
             string path = @"C:\Users\Administrator\Documents\ObjAllTeutonia_All.txt";
 
-            //string allMods = ProcessFile.PassAllModificationTags(path, true);
-            //Console.WriteLine(allMods);
-            string allMods = "192";
+            string allMods = ProcessFile.PassAllModificationTags(path, true);
             Console.WriteLine(ProcessFile.RunProcessing(allMods, path, @"", true, allMods));
 
             //foreach(string mod in allMods.Split(','))
@@ -23,9 +20,7 @@ namespace ConsoleApp1
             //}
            
             //Console.WriteLine(ProcessFile.RunProcessing("192", @"C:\Users\Administrator\Documents\ObjAllTeutonia_All.txt", @"", true, "192"));
-
             //Console.WriteLine(ProcessFile.RunPreview(allMods, @"C:\Users\Administrator\Documents\ObjAllTeutonia_p1.txt", true));
-
             //Console.WriteLine("end");
              Console.ReadKey();
         }

@@ -51,6 +51,7 @@
     <Compile Include="ProcessFile.cs" />
     <Compile Include="fileSplitter\FileSpliiter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="repositories\AuxiliaryRepository.cs" />
     <Compile Include="repositories\ChangeClassRepository.cs" />
     <Compile Include="repositories\ObjectClassRepository.cs" />
     <Compile Include="saveTool\DocumentationExport.cs" />
