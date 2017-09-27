@@ -103,7 +103,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         public static string PassAllModificationTags(string inputPath, bool highAccuracy)
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
-            return TagDetection.GetModificationString(File.ReadAllText(inputPath));
+            return TagDetection.GetModificationString(inputPath);
         }
     }
 }

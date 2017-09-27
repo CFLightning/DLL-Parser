@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
@@ -265,11 +266,29 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return ret.Union(GetFieldDescriptionTagList(code)).ToList();
         }
 
-        static public string GetModificationString(string code)
+        static public string GetModificationString(string path)
         {
-            string[] codeLines = code.Replace("\r", "").Split('\n');
-            List<string> mods = FindModsInTags(FindTagsAndGenerateList(codeLines),true);
+            StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1")); //using (
+            
+            string line;
+            List<string> mods = new List<string>();
+            List<string> tags = new List<string>();
+            List<string> uniqueMods = new List<string>();
+            while ((line = inputfile.ReadLine()) != null)
+            {
+                string[] codeLine = line.Split('\n'); //Replace("\r", "").
+                tags.AddRange(FindTags(codeLine));
+            }
+            mods.AddRange(FindModsInTags(tags));
+            uniqueMods = mods.GroupBy(x => x).Select(grp => grp.First()).ToList(); //unique
+            inputfile.Close();
             return string.Join(",", mods.ToArray());
+           
+
+            //string[] codeLines = code.Replace("\r", "").Split('\n');
+            //List<string> mods = FindModsInTags(FindTags(codeLines));//FindTagsAndGenerateList(codeLines),true);
+            //return string.Join(",", mods.ToArray());
+            return "";
         }
 
         static private List<string> FindTagsAndGenerateList(string[] codeLines)
