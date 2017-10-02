@@ -35,10 +35,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 if (File.Exists(modPath + @"\Modification " + CleanFileName(chg.ChangelogCode) + " list.txt"))
                     File.Delete(modPath + @"\Modification " + CleanFileName(chg.ChangelogCode) + " list.txt");
 
+                // Details
                 string detailPath = modPath + @"\Details\" + CleanFileName(chg.ChangelogCode);
                 DirectoryInfo directoryDetail = Directory.CreateDirectory(detailPath);
                 SetFullPermission(ref directoryDetail);
-
                 if (File.Exists(detailPath + @"\" + chg.SourceObject + "#" + chg.Location + @".txt"))
                     File.Delete(detailPath + @"\" + chg.SourceObject + "#" + chg.Location + @".txt");
 
@@ -53,8 +53,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                     File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", modChange.Contents);
                     File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
 
+                    // Details
                     string detailPath = modPath + @"\Details\" + CleanFileName(modChange.ChangelogCode);
-
                     File.AppendAllText(detailPath + @"\" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", modChange.Contents);
                     File.AppendAllText(detailPath + @"\" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
                 }

@@ -110,7 +110,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static public Regex GetFittingEndPattern(string beginTagLine)
         {
-            string mod = GetTagedModyfication(beginTagLine);
+            string mod = GetTagedModification(beginTagLine);
             foreach (var patternPair in tagPairPattern)
             {
                 if (patternPair[(int)Marks.BEGIN].IsMatch(beginTagLine))
@@ -200,9 +200,46 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 }
             }
 
-            AuxRepo.foundTagList = AuxRepo.foundTagList.Concat(tagList).ToList();
-            AuxRepo.modInTagList = AuxRepo.modInTagList.Concat(tagModList).ToList();
+            //AuxRepo.foundTagList = AuxRepo.foundTagList.Concat(tagList).ToList();
+            //AuxRepo.modInTagList = AuxRepo.modInTagList.Concat(tagModList).ToList();
 
+            return modList;
+        }
+
+        static private List<string> FindModsInRepo()
+        {
+            List<string> tagModList = new List<string>();
+            Match match = null;
+
+            foreach (var tag in AuxRepo.fullTagList.Where(t => t.mod != null).ToList())
+            {
+                if (tagPatterns[(int)Marks.BEGIN].IsMatch(tag.comment))
+                {
+                    match = tagPatterns[(int)Marks.BEGIN].Match(tag.comment);
+                }
+                else if (tagPatterns[(int)Marks.END].IsMatch(tag.comment))
+                {
+                    match = tagPatterns[(int)Marks.END].Match(tag.comment);
+                }
+                else if (tagPatterns[(int)Marks.OTHER].IsMatch(tag.comment))
+                {
+                    match = tagPatterns[(int)Marks.OTHER].Match(tag.comment);
+                }
+                AuxRepo.Tags newTag = tag;
+                newTag.mod = match.Groups["mod"].Value;
+                int idx = AuxRepo.fullTagList.FindIndex(t => t.inLine == tag.inLine);
+                AuxRepo.fullTagList[idx] = newTag;
+                tagModList.Add(match.Groups["mod"].Value);
+            }
+
+            List<string> modList = new List<string>();
+            foreach (var tag in tagModList)
+            {
+                if (!modList.Contains(tag) && !ContainsRestrictedWords(tag))
+                {
+                    modList.Add(tag);
+                }
+            }
             return modList;
         }
 
@@ -226,7 +263,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 "TO",
                 "UNTIL",
                 "WHILE",
-                "WITH"
+                "WITH",
+                "OR"
             };
             foreach(string word in RestrictedWords)
             {
@@ -236,7 +274,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return false;
         }
 
-        static public string GetTagedModyfication(string tagLine)
+        static public string GetTagedModification(string tagLine)
         {
             if (tagPatterns[(int)Marks.BEGIN].IsMatch(tagLine))
             {
@@ -262,90 +300,117 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static public string GetModificationString(string path)
         {
-            StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1")); //using (
+            AuxRepo.ClearRepo();
+            AuxRepo.DeleteFiles();
+
+            StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1"));
             
             string line;
             List<string> mods = new List<string>();
             List<string> tags = new List<string>();
-            List<string> uniqueMods = new List<string>();
+            //List<string> uniqueMods = new List<string>();
             while ((line = inputfile.ReadLine()) != null)
             {
                 string[] codeLine = line.Split('\n'); //Replace("\r", "").
-                tags.AddRange(FindTagsAndGenerateList(codeLine));
+                //tags.AddRange(FindTagsAndGenerateList(codeLine));
+                FindTagsToRepo(codeLine);
             }
-            mods.AddRange(FindModsInTags(tags));
-            uniqueMods = mods.GroupBy(x => x).Select(grp => grp.First()).ToList(); //unique
             inputfile.Close();
 
-            //int blockSize = 1000000;
-            //int blockCount = File.ReadLines(path).Count() / blockSize;
-            //List<string> mods = new List<string>();
-            //string[] lines;
-
-            //for (int i = 0; i < blockCount; i++)
-            //{
-            //    lines = File.ReadLines(path).Skip(blockSize * i).Take(blockSize).ToArray();
-            //    mods = mods.Union(FindModsInTags(FindTagsAndGenerateList(lines), true)).ToList();
-            //}
-            //lines = File.ReadAllLines(path).Skip(blockCount * blockSize).ToArray();
-            //mods = mods.Union(FindModsInTags(FindTagsAndGenerateList(lines), true)).ToList();
-
-            AuxRepo.DeleteFiles();
-            AuxRepo.SaveToFiles();
+            //mods.AddRange(FindModsInTags(tags));
+            mods = AuxRepo.GetAllModList().Distinct().ToList();
+            //uniqueMods = mods.GroupBy(x => x).Select(grp => grp.First()).ToList(); //unique
             
-
+            AuxRepo.SaveToFilesFull();
+            //AuxRepo.SaveToFiles();
+            
             return string.Join(",", mods.ToArray());
         }
 
-        static string obj;
-        static private List<string> FindTagsAndGenerateList(string[] codeLines)
+        //static string obj;
+        //static private List<string> FindTagsAndGenerateList(string[] codeLines)
+        //{
+        //    char[] separator = new char[] { ' ' };
+        //    if (obj == null)
+        //        obj = codeLines[0];//.Split(separator, 2)[1];
+        //    List<string> tagList = new List<string>();
+
+        //    foreach (var line in codeLines)
+        //    {
+        //        AuxRepo.lineNo++;
+        //        if (line.Contains(@"//"))
+        //        {
+        //            if (CheckIfTagInLine(line))
+        //            {
+        //                tagList.Add(line.TrimStart(' '));
+        //                AuxRepo.tagLineList.Add(AuxRepo.lineNo);
+
+        //                string mod = GetTagedModification(line);
+        //                if (!ContainsRestrictedWords(mod))
+        //                {
+        //                    if (!AuxRepo.modList.Contains(mod))
+        //                    {
+        //                        AuxRepo.modList.Add(mod);
+        //                        AuxRepo.modContentList.Add(obj);
+        //                        continue;
+        //                    }
+        //                    if (!AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)].Contains(obj))
+        //                        AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)] += (System.Environment.NewLine + obj);
+
+        //                    if (!AuxRepo.objList.Contains(obj))
+        //                    {
+        //                        AuxRepo.objList.Add(obj);
+        //                        AuxRepo.objContentList.Add(mod);
+        //                        continue;
+        //                    }
+        //                    if (!AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)].Contains(mod))
+        //                        AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)] += (System.Environment.NewLine + mod);
+        //                }
+        //            }
+        //            else
+        //                AuxRepo.abandonedList.Add("\t" + line.TrimStart(' '));
+        //        }
+        //        else if (line.StartsWith("OBJECT "))
+        //        {
+        //            obj = line;//.Split(separator, 2)[1];
+        //            AuxRepo.abandonedList.Add(obj);
+        //        }
+        //    }
+            
+        //    return tagList;
+        //  }
+
+        static private void FindTagsToRepo(string[] codeLines)
         {
             char[] separator = new char[] { ' ' };
-            if (obj == null)
-                obj = codeLines[0];//.Split(separator, 2)[1];
-            List<string> tagList = new List<string>();
+            if (AuxRepo.tagObject == null)
+                AuxRepo.tagObject = codeLines[0];
+            AuxRepo.Tags tag = new AuxRepo.Tags();
 
             foreach (var line in codeLines)
             {
+                AuxRepo.lineNo++;
                 if (line.Contains(@"//"))
                 {
+                    tag.comment = line.TrimStart(' ');
+                    tag.inLine = AuxRepo.lineNo;
+                    tag.inObject = AuxRepo.tagObject;
+
                     if (CheckIfTagInLine(line))
                     {
-                        tagList.Add(line.TrimStart(' '));
-                        string mod = GetTagedModyfication(line);
-                        if (!ContainsRestrictedWords(mod))
+                        if (!ContainsRestrictedWords(GetTagedModification(line)))
                         {
-                            if (!AuxRepo.modList.Contains(mod))
-                            {
-                                AuxRepo.modList.Add(mod);
-                                AuxRepo.modContentList.Add(obj);
-                                continue;
-                            }
-                            if (!AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)].Contains(obj))
-                                AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)] += (System.Environment.NewLine + obj);
-
-                            if (!AuxRepo.objList.Contains(obj))
-                            {
-                                AuxRepo.objList.Add(obj);
-                                AuxRepo.objContentList.Add(mod);
-                                continue;
-                            }
-                            if (!AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)].Contains(mod))
-                                AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)] += (System.Environment.NewLine + mod);
+                            tag.mod = GetTagedModification(line);
                         }
                     }
-                    else
-                        AuxRepo.abandonedList.Add("\t" + line.TrimStart(' '));
+                    AuxRepo.fullTagList.Add(tag);
                 }
                 else if (line.StartsWith("OBJECT "))
                 {
-                    obj = line;//.Split(separator, 2)[1];
-                    AuxRepo.abandonedList.Add(obj);
+                    AuxRepo.tagObject = line;
                 }
             }
-            
-            return tagList;
-          }
+        }
 
         static public List<string> GetTagList(string code)
         {

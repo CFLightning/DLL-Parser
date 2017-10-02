@@ -131,7 +131,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                                     ChangeClassRepository.AppendChange(change);
                                     obj.Changelog.Add(change);
                                 }
-                                else if (TagDetection.GetTagedModyfication(line) == modtag && TagDetection.CheckIfBeginTagInLine(line))
+                                else if (TagDetection.GetTagedModification(line) == modtag && TagDetection.CheckIfBeginTagInLine(line))
                                 {
                                     currentFlag = modtag;
                                     startFlag = true;
