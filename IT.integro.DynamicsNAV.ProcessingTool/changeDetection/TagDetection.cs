@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using AuxRepo = IT.integro.DynamicsNAV.ProcessingTool.repositories.AuxiliaryRepository;
+using TagRepo = IT.integro.DynamicsNAV.ProcessingTool.repositories.TagRepository;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 {
@@ -211,7 +211,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             List<string> tagModList = new List<string>();
             Match match = null;
 
-            foreach (var tag in AuxRepo.fullTagList.Where(t => t.mod != null).ToList())
+            foreach (var tag in TagRepo.fullTagList.Where(t => t.mod != null).ToList())
             {
                 if (tagPatterns[(int)Marks.BEGIN].IsMatch(tag.comment))
                 {
@@ -225,10 +225,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 {
                     match = tagPatterns[(int)Marks.OTHER].Match(tag.comment);
                 }
-                AuxRepo.Tags newTag = tag;
+                TagRepo.Tags newTag = tag;
                 newTag.mod = match.Groups["mod"].Value;
-                int idx = AuxRepo.fullTagList.FindIndex(t => t.inLine == tag.inLine);
-                AuxRepo.fullTagList[idx] = newTag;
+                int idx = TagRepo.fullTagList.FindIndex(t => t.inLine == tag.inLine);
+                TagRepo.fullTagList[idx] = newTag;
                 tagModList.Add(match.Groups["mod"].Value);
             }
 
@@ -300,8 +300,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static public string GetModificationString(string path)
         {
-            AuxRepo.ClearRepo();
-            AuxRepo.DeleteFiles();
+            TagRepo.ClearRepo();
+            TagRepo.DeleteFiles();
 
             StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1"));
             
@@ -318,10 +318,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             inputfile.Close();
 
             //mods.AddRange(FindModsInTags(tags));
-            mods = AuxRepo.GetAllModList().Distinct().ToList();
+            mods = TagRepo.GetAllModList().Distinct().ToList();
             //uniqueMods = mods.GroupBy(x => x).Select(grp => grp.First()).ToList(); //unique
             
-            AuxRepo.SaveToFilesFull();
+            TagRepo.SaveToFilesFull();
             //AuxRepo.SaveToFiles();
             
             return string.Join(",", mods.ToArray());
@@ -383,18 +383,18 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static private void FindTagsToRepo(string[] codeLines)
         {
             char[] separator = new char[] { ' ' };
-            if (AuxRepo.tagObject == null)
-                AuxRepo.tagObject = codeLines[0];
-            AuxRepo.Tags tag = new AuxRepo.Tags();
+            if (TagRepo.tagObject == null)
+                TagRepo.tagObject = codeLines[0];
+            TagRepo.Tags tag = new TagRepo.Tags();
 
             foreach (var line in codeLines)
             {
-                AuxRepo.lineNo++;
+                TagRepo.lineNo++;
                 if (line.Contains(@"//"))
                 {
                     tag.comment = line.TrimStart(' ');
-                    tag.inLine = AuxRepo.lineNo;
-                    tag.inObject = AuxRepo.tagObject;
+                    tag.inLine = TagRepo.lineNo;
+                    tag.inObject = TagRepo.tagObject;
 
                     if (CheckIfTagInLine(line))
                     {
@@ -403,11 +403,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                             tag.mod = GetTagedModification(line);
                         }
                     }
-                    AuxRepo.fullTagList.Add(tag);
+                    TagRepo.fullTagList.Add(tag);
                 }
                 else if (line.StartsWith("OBJECT "))
                 {
-                    AuxRepo.tagObject = line;
+                    TagRepo.tagObject = line;
                 }
             }
         }

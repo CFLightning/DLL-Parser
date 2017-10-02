@@ -45,7 +45,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-    public static string RunPreview(string expectedModifications, string inputFilePath, bool highAccuracy)
+        public static string RunPreview(string expectedModifications, string inputFilePath, bool highAccuracy)
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
@@ -68,6 +68,23 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
+        public static void MergeTags(string inputFilePath, string mergeString)
+        {
+            // MODfrom|>|MODto|#|MODfrom|>|MODto|#|...
+
+            List<string> mergeList = mergeString.Split(new string[] { "|#|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            MergeTool mTool = new MergeTool(inputFilePath);
+            foreach (var mergeItem in mergeList)
+            {
+                Merge merge;
+                merge.fromMod = mergeItem.Split(new string[] { "|>|" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                merge.toMod = mergeItem.Split(new string[] { "|>|" }, StringSplitOptions.RemoveEmptyEntries)[1];
+                mTool.FindTagsToMerge(merge);
+                mTool.Merge();
+            }
+            MergeTool.SaveFile();
+        }
+
         private static List<string> reduceObjects(List<string> expectedModifications)
         {
             List<string> objectsToSearch = new List<string>();
@@ -78,7 +95,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 //string modFilePath = AuxiliaryRepository.pathObjWithMod + modFileName + ".txt";
                 //string[] allText = File.ReadAllLines(modFilePath);//.Replace(" ", string.Empty);
 
-                string[] allText = AuxiliaryRepository.GetModObjectList(mod).ToArray();
+                string[] allText = TagRepository.GetModObjectList(mod).ToArray();
                 objectsToSearch = objectsToSearch.Union(allText).ToList();
             }
             char[] separator = new char[] { ' ' };

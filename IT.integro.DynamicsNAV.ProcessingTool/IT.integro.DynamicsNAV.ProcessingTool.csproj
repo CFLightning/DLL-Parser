@@ -43,6 +43,7 @@
     <Compile Include="changeDetection\FlagDetection.cs" />
     <Compile Include="changeDetection\TagDetection.cs" />
     <Compile Include="changeDetection\TriggerDetection.cs" />
+    <Compile Include="fileSplitter\MergeTool.cs" />
     <Compile Include="indentationChecker\IndentationChecker.cs" />
     <Compile Include="modificationSearchTool\ModificationCleanerTool.cs" />
     <Compile Include="modificationSearchTool\ModificationSearchTool.cs" />
@@ -51,7 +52,7 @@
     <Compile Include="ProcessFile.cs" />
     <Compile Include="fileSplitter\FileSpliiter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="repositories\AuxiliaryRepository.cs" />
+    <Compile Include="repositories\TagRepository.cs" />
     <Compile Include="repositories\ChangeClassRepository.cs" />
     <Compile Include="repositories\ObjectClassRepository.cs" />
     <Compile Include="saveTool\DocumentationExport.cs" />

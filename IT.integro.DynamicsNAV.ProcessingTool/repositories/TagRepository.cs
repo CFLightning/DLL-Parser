@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
 {
-    static class AuxiliaryRepository
+    static class TagRepository
     {
         public struct Tags
         {
@@ -42,42 +42,42 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
 
         static public List<string> GetTagModList()
         {
-            return AuxiliaryRepository.fullTagList.Where(r => r.mod != null).Select(t => t.mod).ToList();
+            return TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.mod).ToList();
         }
 
         static public List<string> GetTagList()
         {
-            return AuxiliaryRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment).ToList();
+            return TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment).ToList();
         }
 
         static public List<string> GetAbandonedCommentList()
         {
-            return AuxiliaryRepository.fullTagList.Where(r => r.mod == null).Select(t => t.comment).ToList();
+            return TagRepository.fullTagList.Where(r => r.mod == null).Select(t => t.comment).ToList();
         }
 
         static public List<string> GetAllCommentList()
         {
-            return AuxiliaryRepository.fullTagList.Select(t => t.comment).ToList();
+            return TagRepository.fullTagList.Select(t => t.comment).ToList();
         }
 
         static public List<string> GetModObjectList(string mod)
         {
-            return AuxiliaryRepository.fullTagList.Where(w => w.mod == mod).Select(t => t.inObject).Distinct().ToList();
+            return TagRepository.fullTagList.Where(w => w.mod == mod).Select(t => t.inObject).Distinct().ToList();
         }
 
         static public List<string> GetAllObjectList()
         {
-            return AuxiliaryRepository.fullTagList.Where(r => r.mod != null).Select(t => t.inObject).Distinct().ToList();
+            return TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.inObject).Distinct().ToList();
         }
 
         static public List<string> GetObjectModList(string inObject)
         {
-            return AuxiliaryRepository.fullTagList.Where(w => w.inObject == inObject && w.mod != null).Select(t => t.mod).Distinct().ToList();
+            return TagRepository.fullTagList.Where(w => w.inObject == inObject && w.mod != null).Select(t => t.mod).Distinct().ToList();
         }
 
         static public List<string> GetAllModList()
         {
-            return AuxiliaryRepository.fullTagList.Where(r => r.mod != null).Select(t => t.mod).Distinct().ToList();
+            return TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.mod).Distinct().ToList();
         }
 
         static public void SaveToFilesFull()
@@ -92,10 +92,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
             string[] textFullTag = fullTagList.Select(s => s.inLine + separator + s.inObject + separator + s.comment + separator + s.mod).ToArray();
             File.WriteAllLines(pathFullTagList, textFullTag);
             //  Found Tags + Mods
-            string[] textTag = AuxiliaryRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment + separator + t.mod).ToArray();
+            string[] textTag = TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment + separator + t.mod).ToArray();
             File.WriteAllLines(pathTagList, textTag);
             //  Abandoned Comments
-            string[] textAbandonedComments = AuxiliaryRepository.fullTagList.Where(r => r.mod == null).Select(t => t.inObject + separator + t.comment).ToArray();
+            string[] textAbandonedComments = TagRepository.fullTagList.Where(r => r.mod == null).Select(t => t.inObject + separator + t.comment).ToArray();
             File.WriteAllLines(pathAbandoned, textAbandonedComments);
             //  Mod per Object
             foreach (var obj in GetAllObjectList())
@@ -182,5 +182,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
             tagObject = string.Empty;
             lineNo = 0;
         }
+
     }
 }
