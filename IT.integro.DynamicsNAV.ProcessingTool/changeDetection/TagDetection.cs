@@ -199,10 +199,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                     modList.Add(tag);
                 }
             }
-
-            //AuxRepo.foundTagList = AuxRepo.foundTagList.Concat(tagList).ToList();
-            //AuxRepo.modInTagList = AuxRepo.modInTagList.Concat(tagModList).ToList();
-
             return modList;
         }
 
@@ -326,60 +322,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             
             return string.Join(",", mods.ToArray());
         }
-
-        //static string obj;
-        //static private List<string> FindTagsAndGenerateList(string[] codeLines)
-        //{
-        //    char[] separator = new char[] { ' ' };
-        //    if (obj == null)
-        //        obj = codeLines[0];//.Split(separator, 2)[1];
-        //    List<string> tagList = new List<string>();
-
-        //    foreach (var line in codeLines)
-        //    {
-        //        AuxRepo.lineNo++;
-        //        if (line.Contains(@"//"))
-        //        {
-        //            if (CheckIfTagInLine(line))
-        //            {
-        //                tagList.Add(line.TrimStart(' '));
-        //                AuxRepo.tagLineList.Add(AuxRepo.lineNo);
-
-        //                string mod = GetTagedModification(line);
-        //                if (!ContainsRestrictedWords(mod))
-        //                {
-        //                    if (!AuxRepo.modList.Contains(mod))
-        //                    {
-        //                        AuxRepo.modList.Add(mod);
-        //                        AuxRepo.modContentList.Add(obj);
-        //                        continue;
-        //                    }
-        //                    if (!AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)].Contains(obj))
-        //                        AuxRepo.modContentList[AuxRepo.modList.IndexOf(mod)] += (System.Environment.NewLine + obj);
-
-        //                    if (!AuxRepo.objList.Contains(obj))
-        //                    {
-        //                        AuxRepo.objList.Add(obj);
-        //                        AuxRepo.objContentList.Add(mod);
-        //                        continue;
-        //                    }
-        //                    if (!AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)].Contains(mod))
-        //                        AuxRepo.objContentList[AuxRepo.objList.IndexOf(obj)] += (System.Environment.NewLine + mod);
-        //                }
-        //            }
-        //            else
-        //                AuxRepo.abandonedList.Add("\t" + line.TrimStart(' '));
-        //        }
-        //        else if (line.StartsWith("OBJECT "))
-        //        {
-        //            obj = line;//.Split(separator, 2)[1];
-        //            AuxRepo.abandonedList.Add(obj);
-        //        }
-        //    }
-            
-        //    return tagList;
-        //  }
-
+        
         static private void FindTagsToRepo(string[] codeLines)
         {
             char[] separator = new char[] { ' ' };

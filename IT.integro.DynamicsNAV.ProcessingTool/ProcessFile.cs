@@ -68,7 +68,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-        public static void MergeTags(string inputFilePath, string mergeString)
+        public static bool MergeTags(string inputFilePath, string mergeString)
         {
             // MODfrom|>|MODto|#|MODfrom|>|MODto|#|...
 
@@ -80,9 +80,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 merge.fromMod = mergeItem.Split(new string[] { "|>|" }, StringSplitOptions.RemoveEmptyEntries)[0];
                 merge.toMod = mergeItem.Split(new string[] { "|>|" }, StringSplitOptions.RemoveEmptyEntries)[1];
                 mTool.FindTagsToMerge(merge);
-                mTool.Merge();
+                if (!mTool.Merge())
+                {
+                    Console.WriteLine("MERGE ERROR");
+                    return false;
+                }
             }
             MergeTool.SaveFile();
+            return true;
         }
 
         private static List<string> reduceObjects(List<string> expectedModifications)
@@ -91,10 +96,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
             foreach (var mod in expectedModifications)
             {
-                //string modFileName = string.Join("_", mod.Split(Path.GetInvalidFileNameChars()));
-                //string modFilePath = AuxiliaryRepository.pathObjWithMod + modFileName + ".txt";
-                //string[] allText = File.ReadAllLines(modFilePath);//.Replace(" ", string.Empty);
-
                 string[] allText = TagRepository.GetModObjectList(mod).ToArray();
                 objectsToSearch = objectsToSearch.Union(allText).ToList();
             }

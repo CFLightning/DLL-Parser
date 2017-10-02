@@ -14,7 +14,7 @@ namespace ConsoleApp1
                 Console.WriteLine(mod);
             Console.WriteLine(Environment.NewLine);
 
-            string mergeString = "IT|>|TI|#|FX02|>|FFXX|#|";
+            string mergeString = "IT|>|-TI|#|FX02|>|-FFXX|#|";
             ProcessFile.MergeTags(path, mergeString);
             
             path = @"C:\FILES\Object(Merged).txt";
