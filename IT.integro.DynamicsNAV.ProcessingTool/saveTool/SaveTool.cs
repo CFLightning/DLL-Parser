@@ -1,5 +1,6 @@
 ﻿using IT.integro.DynamicsNAV.ProcessingTool.parserClass;
 using IT.integro.DynamicsNAV.ProcessingTool.repositories;
+using IT.integro.DynamicsNAV.ProcessingTool.changeDetection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,24 +25,21 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
         public static bool SaveChangesToFiles(string path, List<string> modifications)
         {
+            List<ChangeClass> changes = ChangeClassRepository.changeRepository.FindAll(x => modifications.Contains(x.ChangelogCode));
             string modPath = path + "Modifications";
+            string detailPath = modPath + @"\Details\";
+
+            Directory.Delete(modPath, true);
             DirectoryInfo directory = Directory.CreateDirectory(modPath);
             SetFullPermission(ref directory);
-
-            List<ChangeClass> changes = ChangeClassRepository.changeRepository.FindAll(x => modifications.Contains(x.ChangelogCode));
-
-            foreach (ChangeClass chg in changes)
+            
+            foreach (var mod in modifications)
             {
-                if (File.Exists(modPath + @"\Modification " + CleanFileName(chg.ChangelogCode) + " list.txt"))
-                    File.Delete(modPath + @"\Modification " + CleanFileName(chg.ChangelogCode) + " list.txt");
+                File.Create(modPath + @"\Modification " + CleanFileName(mod) + " list.txt").Dispose();
 
-                // Details
-                string detailPath = modPath + @"\Details\" + CleanFileName(chg.ChangelogCode);
-                DirectoryInfo directoryDetail = Directory.CreateDirectory(detailPath);
+                    // Details
+                DirectoryInfo directoryDetail = Directory.CreateDirectory(detailPath + CleanFileName(mod));
                 SetFullPermission(ref directoryDetail);
-                if (File.Exists(detailPath + @"\" + chg.SourceObject + "#" + chg.Location + @".txt"))
-                    File.Delete(detailPath + @"\" + chg.SourceObject + "#" + chg.Location + @".txt");
-
             }
             
             foreach (ChangeClass modChange in changes)
@@ -53,10 +51,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                     File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", modChange.Contents);
                     File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
 
-                    // Details
-                    string detailPath = modPath + @"\Details\" + CleanFileName(modChange.ChangelogCode);
-                    File.AppendAllText(detailPath + @"\" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", modChange.Contents);
-                    File.AppendAllText(detailPath + @"\" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
+                        // Details
+                    File.AppendAllText(detailPath + CleanFileName(modChange.ChangelogCode) + "//" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", modChange.Contents);
+                    File.AppendAllText(detailPath + CleanFileName(modChange.ChangelogCode) + "//" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
                 }
             }
             return true;

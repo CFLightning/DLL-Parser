@@ -24,27 +24,28 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
             List<string> docModifications = PrepareDocProcessing(documentationModifications);
-            StopWatchStep();
+            WatchStep();
             FileSplitter.SplitFile(inputFilePath);
-            StopWatchStep();
+            WatchStep();
             IndentationChecker.CheckIndentations();
-            StopWatchStep();
+            WatchStep();
             if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
             {
                 return "ERROR404";
             }
-            StopWatchStep();
+            WatchStep();
             ModificationCleanerTool.CleanChangeCode();
-            StopWatchStep();
+            WatchStep();
             DocumentationTrigger.UpdateDocumentationTrigger(docModifications);
-            StopWatchStep();
-            //SaveTool.SaveObjectsToFiles(outputPath);
+            WatchStep();
+            SaveTool.SaveObjectsToFiles(outputPath);
+            WatchStep();
             SaveTool.SaveChangesToFiles(outputPath, expModifications);
-            StopWatchStep();
+            WatchStep();
             SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
-            StopWatchStep();
+            WatchStep();
             SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
-            StopWatchStep();
+            WatchStep();
 
             ChangeClassRepository.changeRepository.Clear();
             ObjectClassRepository.objectRepository.Clear();
@@ -137,7 +138,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         }
 
         static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-        public static void StopWatchStep()
+        public static void WatchStep()
         {
             if (watch.IsRunning)
             {

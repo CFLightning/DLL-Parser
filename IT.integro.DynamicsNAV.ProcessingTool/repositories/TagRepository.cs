@@ -21,6 +21,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
         static public List<Tags> fullTagList = new List<Tags>();
         static public string tagObject;
         static public int lineNo = 0;
+
         static string pathFullTagList = Path.GetTempPath() + @"NAVCommentTool\Full tag list.txt";
         static string pathTagList = Path.GetTempPath() + @"NAVCommentTool\Tag list.txt";
         static string pathAbandoned = Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt";
