@@ -76,7 +76,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-        public static bool MergeTags(string inputFilePath, string mergeString)
+        public static bool MergeTags(string mergeString, string inputFilePath, string outputFilePath = "")
         {
             // MODfrom|>|MODto|#|MODfrom|>|MODto|#|...
 
@@ -94,7 +94,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                     return false;
                 }
             }
-            MergeTool.SaveFile();
+            MergeTool.SaveFile(outputFilePath);
             return true;
         }
 
@@ -138,12 +138,12 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         }
 
         static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-        public static void WatchStep()
+        public static void WatchStep(string comment = "")
         {
             if (watch.IsRunning)
             {
                 watch.Stop();
-                Console.WriteLine(watch.Elapsed.TotalSeconds.ToString());
+                Console.WriteLine(watch.Elapsed.TotalSeconds.ToString() + "\t" + comment);
             }
             watch.Restart();
         }

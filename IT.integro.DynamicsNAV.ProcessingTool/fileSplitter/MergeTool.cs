@@ -41,10 +41,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
             return true;
         }
 
-        static public void SaveFile()
+        static public void SaveFile(string outputFileName)
         {
             string directoryPath = System.IO.Path.GetDirectoryName(inputFilePath) + "\\";
-            string outputFileName = System.IO.Path.GetFileNameWithoutExtension(inputFilePath) + "(Merged).txt";
+            if (outputFileName == "")
+                outputFileName = System.IO.Path.GetFileNameWithoutExtension(inputFilePath) + " (Merged).txt";
+            if (!outputFileName.EndsWith(".txt"))
+                outputFileName += ".txt";
             string outputFilePath = directoryPath + outputFileName;
             System.IO.File.WriteAllLines(outputFilePath, fileLines);
         }
