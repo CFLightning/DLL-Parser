@@ -304,21 +304,16 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             string line;
             List<string> mods = new List<string>();
             List<string> tags = new List<string>();
-            //List<string> uniqueMods = new List<string>();
             while ((line = inputfile.ReadLine()) != null)
             {
                 string[] codeLine = line.Split('\n'); //Replace("\r", "").
-                //tags.AddRange(FindTagsAndGenerateList(codeLine));
                 FindTagsToRepo(codeLine);
             }
             inputfile.Close();
-
-            //mods.AddRange(FindModsInTags(tags));
+            
             mods = TagRepo.GetAllModList().Distinct().ToList();
-            //uniqueMods = mods.GroupBy(x => x).Select(grp => grp.First()).ToList(); //unique
             
             TagRepo.SaveToFilesFull();
-            //AuxRepo.SaveToFiles();
             
             return string.Join(",", mods.ToArray());
         }

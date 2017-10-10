@@ -76,17 +76,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-        public static bool MergeTags(string mergeString, string inputFilePath, string outputFilePath = "")
+        public static bool MergeTagsPerChange(string mergeString, string inputFilePath, string outputFileName = "")
         {
             // MODfrom|>|MODto|#|MODfrom|>|MODto|#|...
-
-            List<string> mergeList = mergeString.Split(new string[] { "|#|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            
+            //List<string> mergeList = mergeString.Split(new string[] { "|#|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             MergeTool mTool = new MergeTool(inputFilePath);
-            foreach (var mergeItem in mergeList)
+            foreach (var merge in MergeTool.GetMergePairList(mergeString))
             {
-                Merge merge;
-                merge.fromMod = mergeItem.Split(new string[] { "|>|" }, StringSplitOptions.RemoveEmptyEntries)[0];
-                merge.toMod = mergeItem.Split(new string[] { "|>|" }, StringSplitOptions.RemoveEmptyEntries)[1];
                 mTool.FindTagsToMerge(merge);
                 if (!mTool.Merge())
                 {
@@ -94,7 +91,16 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                     return false;
                 }
             }
-            MergeTool.SaveFile(outputFilePath);
+            System.Windows.Forms.MessageBox.Show("asd");
+            MergeTool.SaveFile(outputFileName);
+
+            MergeTool.MergeAndSave(inputFilePath, outputFileName + "2", mergeString);
+            return true;
+        }
+
+        public static bool MergeTagsLineByLine(string mergeString, string inputFilePath, string outputFileName = "")
+        {
+            MergeTool.MergeAndSave(inputFilePath, outputFileName + "2", mergeString);
             return true;
         }
 
