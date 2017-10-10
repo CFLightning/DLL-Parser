@@ -24,20 +24,27 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
             List<string> docModifications = PrepareDocProcessing(documentationModifications);
-
+            StopWatchStep();
             FileSplitter.SplitFile(inputFilePath);
+            StopWatchStep();
             IndentationChecker.CheckIndentations();
-            
+            StopWatchStep();
             if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
             {
                 return "ERROR404";
             }
+            StopWatchStep();
             ModificationCleanerTool.CleanChangeCode();
+            StopWatchStep();
             DocumentationTrigger.UpdateDocumentationTrigger(docModifications);
+            StopWatchStep();
             //SaveTool.SaveObjectsToFiles(outputPath);
             SaveTool.SaveChangesToFiles(outputPath, expModifications);
+            StopWatchStep();
             SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
+            StopWatchStep();
             SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
+            StopWatchStep();
 
             ChangeClassRepository.changeRepository.Clear();
             ObjectClassRepository.objectRepository.Clear();
@@ -127,6 +134,17 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
             return TagDetection.GetModificationString(inputPath);
+        }
+
+        static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+        public static void StopWatchStep()
+        {
+            if (watch.IsRunning)
+            {
+                watch.Stop();
+                Console.WriteLine(watch.Elapsed.TotalSeconds.ToString());
+            }
+            watch.Restart();
         }
     }
 }

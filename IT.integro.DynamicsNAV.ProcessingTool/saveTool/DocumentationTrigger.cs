@@ -30,15 +30,17 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
         public static bool UpdateDocumentationTrigger(List<string> docModifications)
         {
+            StringBuilder builder = new StringBuilder();
+            StringWriter writer = new StringWriter(builder);
+            string line;
+            bool bracketFlag = false, beginFlag = false, writing = false, documentationPrompt = false, deleteFlag = false, addBrackets = false, bracketsExist = false;
 
             List<string> locationList = new List<string>();
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
+                List<string> ObjectModList = TagDetection.GetModyficationList(obj.Contents);
                 StringReader reader = new StringReader(obj.Contents);
-                StringBuilder builder = new StringBuilder();
-                StringWriter writer = new StringWriter(builder);
-                string line;
-                bool bracketFlag = false, beginFlag = false, writing = false, documentationPrompt = false, deleteFlag = false, addBrackets = false, bracketsExist = false;
+                bracketFlag = false; beginFlag = false; writing = false; documentationPrompt = false; deleteFlag = false; addBrackets = false; bracketsExist = false;
 
                 while (null != (line = reader.ReadLine()) && line != "  PROPERTIES")
                 {
@@ -52,17 +54,20 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                     if (line.StartsWith("    BEGIN"))
                     {
                         beginFlag = true;
+                        continue;
                     }
 
                     if (line.StartsWith("    {") && beginFlag)
                     {
                         bracketFlag = true;
                         bracketsExist = true;
+                        continue;
                     }
 
                     if (line.StartsWith("      Automated Documentation"))
                     {
                         documentationPrompt = true;
+                        continue;
                     }
 
                     if (line.StartsWith("    }") && bracketFlag)
@@ -71,11 +76,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         deleteFlag = false;
                         writing = true;
                         bracketsExist = true;
+                        continue;
                     }
 
                     if (line.StartsWith("    END") && beginFlag && bracketsExist)
                     {
                         beginFlag = false;
+                        continue;
                     }
 
                     if (line.StartsWith("    END.") && beginFlag && !bracketsExist)
@@ -84,12 +91,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         addBrackets = true;
                         deleteFlag = false;
                         beginFlag = false;
+                        continue;
                     }
 
                     if (line.StartsWith("      #") && documentationPrompt)
                     {
                         deleteFlag = false;
-                        foreach (string item in TagDetection.GetModyficationList(obj.Contents))
+                        foreach (string item in ObjectModList)
                         {
                             if (line.Contains(item)) deleteFlag = true;
                         }
@@ -112,7 +120,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         foreach (string item in docModifications) //TagDetection.GetModyficationList(obj.Contents))
                         {
                             int actionCounter = 0;
-                            if(TagDetection.GetModyficationList(obj.Contents).Contains(item))
+                            if (ObjectModList.Contains(item))
                             {
                                 writer.WriteLine("      #" + item + "#");
                             }
@@ -163,7 +171,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 }
 
                 obj.Contents = builder.ToString();
-
                 writer.Close();
                 builder = new StringBuilder();
                 writer = new StringWriter(builder);

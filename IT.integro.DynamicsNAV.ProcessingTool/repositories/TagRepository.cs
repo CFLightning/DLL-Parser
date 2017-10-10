@@ -75,16 +75,16 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
             saveTool.SaveTool.SetFullPermission(ref directory);
 
             string separator = "|#|";
-            //  Full Repository
+                //  Full Repository
             string[] textFullTag = fullTagList.Select(s => s.inLine + separator + s.inObject + separator + s.comment + separator + s.mod).ToArray();
             File.WriteAllLines(pathFullTagList, textFullTag);
-            //  Found Tags + Mods
-            string[] textTag = TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment + separator + t.mod).ToArray();
-            File.WriteAllLines(pathTagList, textTag);
-            //  Abandoned Comments
-            string[] textAbandonedComments = TagRepository.fullTagList.Where(r => r.mod == null).Select(t => t.inObject + separator + t.comment).ToArray();
-            File.WriteAllLines(pathAbandoned, textAbandonedComments);
-            //  Mod per Object
+                //  Found Tags + Mods
+            //string[] textTag = TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment + separator + t.mod).ToArray();
+            //File.WriteAllLines(pathTagList, textTag);
+                //  Abandoned Comments
+            //string[] textAbandonedComments = TagRepository.fullTagList.Where(r => r.mod == null).Select(t => t.inObject + separator + t.comment).ToArray();
+            //File.WriteAllLines(pathAbandoned, textAbandonedComments);
+                //  Mod per Object
             foreach (var obj in GetAllObjectList())
             {
                 string objFileName = string.Join("_", obj.Split(Path.GetInvalidFileNameChars()));
@@ -92,7 +92,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
                 string[] textObjectMod = GetObjectModList(obj).ToArray();
                 File.AppendAllLines(objFilePath, textObjectMod);
             }
-            // Object per Mod
+                // Object per Mod
             foreach (var mod in GetAllModList()) 
             {
                 string modFileName = string.Join("_", mod.Split(Path.GetInvalidFileNameChars()));
