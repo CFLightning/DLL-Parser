@@ -29,7 +29,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             string modPath = path + "Modifications";
             string detailPath = modPath + @"\Details\";
 
-            Directory.Delete(modPath, true);
+            if (Directory.Exists(modPath))
+                Directory.Delete(modPath, true);
             DirectoryInfo directory = Directory.CreateDirectory(modPath);
             SetFullPermission(ref directory);
             

@@ -85,6 +85,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
             if (!outputFileName.EndsWith(".txt"))
                 outputFileName += ".txt";
             return directoryPath + outputFileName;
+            
         }
 
         static public void SaveFile(string outputFileName)
@@ -95,22 +96,23 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
 
         static public void MergeAndSave(string inputFileName, string outputFileName, string mergeString)
         {
-            System.IO.StreamReader reader = new System.IO.StreamReader(inputFilePath);
-            string outputFilePath = SetOutputPath(outputFileName);
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(outputFilePath);
+            System.IO.StreamReader reader = new System.IO.StreamReader(inputFileName);
+            //string outputFilePath = SetOutputPath(outputFileName);
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(outputFileName);
             
             List<Merge> mergePairList = GetMergePairList(mergeString);
             string line;
             int lineNumber = 1;
             int tagNumber = 0;
 
+            // Create list of all lines to edit ordered by line no
             List<TagRepository.Tags> tempMergeTagList = new List<TagRepository.Tags>();
             foreach (var item in mergePairList)
             {
                 tempMergeTagList = tempMergeTagList.Union(TagRepository.fullTagList.Where(w => w.mod == item.fromMod)).OrderBy(o => o.inLine).ToList();
             }
 
-
+            // Edit lines from list
             while ((line = reader.ReadLine()) != null)
             {
                 if (tagNumber < tempMergeTagList.Count() && tempMergeTagList[tagNumber].inLine == lineNumber)
@@ -122,9 +124,20 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
                 writer.WriteLine(line);
                 lineNumber++;
             }
-
+            
             reader.Close();
             writer.Close();
+        }
+
+        public static void Fun(System.ComponentModel.BackgroundWorker backgroundWorker)
+        {
+            for (int i = 1; i <= 100; i++)
+            {
+                // Wait 100 milliseconds.
+                System.Threading.Thread.Sleep(100);
+                // Report progress.
+                backgroundWorker.ReportProgress(i);
+            }
         }
 
     }

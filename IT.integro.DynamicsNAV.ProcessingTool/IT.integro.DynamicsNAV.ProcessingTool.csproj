@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,6 +47,12 @@
     <Compile Include="changeDetection\TriggerDetection.cs" />
     <Compile Include="fileSplitter\MergeTool.cs" />
     <Compile Include="indentationChecker\IndentationChecker.cs" />
+    <Compile Include="merge\MergeProgress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="merge\MergeProgress.Designer.cs">
+      <DependentUpon>MergeProgress.cs</DependentUpon>
+    </Compile>
     <Compile Include="modificationSearchTool\ModificationCleanerTool.cs" />
     <Compile Include="modificationSearchTool\ModificationSearchTool.cs" />
     <Compile Include="parserClass\ChangeClass.cs" />
@@ -59,6 +66,11 @@
     <Compile Include="saveTool\DocumentationExport.cs" />
     <Compile Include="saveTool\DocumentationTrigger.cs" />
     <Compile Include="saveTool\SaveTool.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="merge\MergeProgress.resx">
+      <DependentUpon>MergeProgress.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

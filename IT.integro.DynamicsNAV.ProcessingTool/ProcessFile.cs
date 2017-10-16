@@ -76,31 +76,31 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-        public static bool MergeTagsPerChange(string mergeString, string inputFilePath, string outputFileName = "")
-        {
-            // MODfrom|>|MODto|#|MODfrom|>|MODto|#|...
+        //public static bool MergeTagsPerChange(string mergeString, string inputFilePath, string outputFileName = "")
+        //{
+        //    // MODfrom|>|MODto|#|MODfrom|>|MODto|#|...
             
-            //List<string> mergeList = mergeString.Split(new string[] { "|#|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            MergeTool mTool = new MergeTool(inputFilePath);
-            foreach (var merge in MergeTool.GetMergePairList(mergeString))
-            {
-                mTool.FindTagsToMerge(merge);
-                if (!mTool.Merge())
-                {
-                    Console.WriteLine("MERGE ERROR");
-                    return false;
-                }
-            }
-            System.Windows.Forms.MessageBox.Show("asd");
-            MergeTool.SaveFile(outputFileName);
+        //    //List<string> mergeList = mergeString.Split(new string[] { "|#|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+        //    MergeTool mTool = new MergeTool(inputFilePath);
+        //    foreach (var merge in MergeTool.GetMergePairList(mergeString))
+        //    {
+        //        mTool.FindTagsToMerge(merge);
+        //        if (!mTool.Merge())
+        //        {
+        //            Console.WriteLine("MERGE ERROR");
+        //            return false;
+        //        }
+        //    }
+        //    System.Windows.Forms.MessageBox.Show("asd");
+        //    MergeTool.SaveFile(outputFileName);
+        //    return true;
+        //}
 
-            MergeTool.MergeAndSave(inputFilePath, outputFileName + "2", mergeString);
-            return true;
-        }
-
-        public static bool MergeTagsLineByLine(string mergeString, string inputFilePath, string outputFileName = "")
+        public static bool RunMergeProcess(string mergeString, string inputFilePath, string outputFilePath)
         {
-            MergeTool.MergeAndSave(inputFilePath, outputFileName + "2", mergeString);
+            merge.MergeProgress mergeProcess = new merge.MergeProgress(mergeString, inputFilePath, outputFilePath);
+            mergeProcess.ShowDialog();
+
             return true;
         }
 
