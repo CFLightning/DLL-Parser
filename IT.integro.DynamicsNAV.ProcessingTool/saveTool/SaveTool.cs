@@ -113,10 +113,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
             foreach (string modification in expectedModifications)
             {
-                {
-                    if (File.Exists(docPath + @"\" + modification + " documentation file.txt"))
-                        File.Delete(docPath + @"\" + modification + " documentation file.txt");
-                }
+                if (File.Exists(docPath + @"\" + CleanFileName(modification) + " documentation file.txt"))
+                    File.Delete(docPath + @"\" + CleanFileName(modification) + " documentation file.txt");
+                File.Create(docPath + @"\" + CleanFileName(modification) + " documentation file.txt").Dispose();
             }
        
             foreach (string modification in expectedModifications)
