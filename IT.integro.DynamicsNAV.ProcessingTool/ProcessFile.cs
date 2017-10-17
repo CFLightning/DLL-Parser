@@ -100,8 +100,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         {
             merge.MergeProgress mergeProcess = new merge.MergeProgress(mergeString, inputFilePath, outputFilePath);
             mergeProcess.ShowDialog();
-
-            return true;
+            if (mergeProcess.DialogResult == System.Windows.Forms.DialogResult.OK)
+                return true;
+            else
+                return false;
         }
 
         private static List<string> reduceObjects(List<string> expectedModifications)

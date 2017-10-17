@@ -28,16 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.progressBarPreprocess = new System.Windows.Forms.ProgressBar();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorkerPreprocess = new System.ComponentModel.BackgroundWorker();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
-            // progressBar1
+            // progressBarPreprocess
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 56);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(487, 23);
-            this.progressBar1.TabIndex = 0;
+            this.progressBarPreprocess.Location = new System.Drawing.Point(12, 25);
+            this.progressBarPreprocess.Name = "progressBarPreprocess";
+            this.progressBarPreprocess.Size = new System.Drawing.Size(487, 23);
+            this.progressBarPreprocess.TabIndex = 0;
             // 
             // backgroundWorker
             // 
@@ -46,12 +48,27 @@
             this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
             this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
             // 
+            // backgroundWorkerPreprocess
+            // 
+            this.backgroundWorkerPreprocess.WorkerReportsProgress = true;
+            this.backgroundWorkerPreprocess.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerPreprocess_DoWork);
+            this.backgroundWorkerPreprocess.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerPreprocess_ProgressChanged);
+            this.backgroundWorkerPreprocess.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerPreprocess_RunWorkerCompleted);
+            // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(12, 67);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(487, 23);
+            this.progressBar.TabIndex = 1;
+            // 
             // MergeProgress
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(511, 158);
-            this.Controls.Add(this.progressBar1);
+            this.ClientSize = new System.Drawing.Size(511, 112);
+            this.Controls.Add(this.progressBar);
+            this.Controls.Add(this.progressBarPreprocess);
             this.Name = "MergeProgress";
             this.Text = "MergeProgress";
             this.Load += new System.EventHandler(this.MergeProgress_Load);
@@ -61,7 +78,9 @@
 
         #endregion
 
-        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ProgressBar progressBarPreprocess;
         private System.ComponentModel.BackgroundWorker backgroundWorker;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerPreprocess;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }

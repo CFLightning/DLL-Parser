@@ -31,8 +31,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
             this.mergeString = mergeString;
             this.inputFilePath = inputFilePath ;
             this.outputFilePath = outputFilePath;
-            this.mergePairList = GetMergePairList(mergeString);
-            this.tempMergeTagList = GetTagsToReplace(mergePairList);
+            mergePairList = GetMergePairList(mergeString);
         }
 
         private List<Merge> GetMergePairList(string mergeString)
@@ -49,56 +48,33 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
             }
             return mergePairList;
         }
-        
-        private List<TagRepository.Tags> GetTagsToReplace(List<Merge> mergePairList)
-        {
-            // Create list of all lines to edit ordered by line no
-            List<TagRepository.Tags> tempMergeTagList = new List<TagRepository.Tags>();
-            foreach (var item in mergePairList)
-            {
-                tempMergeTagList = tempMergeTagList.Union(TagRepository.fullTagList.Where(w => w.mod == item.fromMod)).OrderBy(o => o.inLine).ToList();
-            }
-            return tempMergeTagList;
-        }
-
-        //private void MergeAndSave(string inputFileName, string outputFileName, string mergeString)
-        //{
-        //    System.IO.StreamReader reader = new System.IO.StreamReader(inputFileName);
-        //    System.IO.StreamWriter writer = new System.IO.StreamWriter(outputFileName);
-
-        //    string line;
-        //    int lineNumber = 1;
-        //    int tagNumber = 0;
-
-        //    // Edit lines from list
-        //    while ((line = reader.ReadLine()) != null)
-        //    {
-        //        if (tagNumber < tempMergeTagList.Count() && tempMergeTagList[tagNumber].inLine == lineNumber)
-        //        {
-        //            Merge merge = mergePairList.Find(mp => mp.fromMod == tempMergeTagList[tagNumber].mod);
-        //            line = line.Replace(merge.fromMod, merge.toMod);
-        //            tagNumber++;
-        //        }
-        //        writer.WriteLine(line);
-        //        lineNumber++;
-        //    }
-
-        //    reader.Close();
-        //    writer.Close();
-        //}
 
         private void MergeProgress_Load(object sender, EventArgs e)
         {
-            progressBar1.Maximum = tempMergeTagList.Count();
-            backgroundWorker.RunWorkerAsync();
+            progressBarPreprocess.Maximum = mergePairList.Count();
+            backgroundWorkerPreprocess.RunWorkerAsync();
         }
 
-        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void backgroundWorkerPreprocess_DoWork(object sender, DoWorkEventArgs e)
         {
-            // Change the value of the ProgressBar to the BackgroundWorker progress.
-            progressBar1.Value = e.ProgressPercentage;
-            // Set the text.
-            //this.Text = e.ProgressPercentage.ToString();
+            // Create list of all lines to edit ordered by line no
+            tempMergeTagList = new List<TagRepository.Tags>();
+            for (int iMerge = 0; iMerge < mergePairList.Count(); iMerge++)
+            {
+                tempMergeTagList = tempMergeTagList.Union(TagRepository.fullTagList.Where(w => w.mod == mergePairList[iMerge].fromMod)).OrderBy(o => o.inLine).ToList();
+                backgroundWorkerPreprocess.ReportProgress(iMerge);
+            }
+        }
+
+        private void backgroundWorkerPreprocess_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBarPreprocess.Value = e.ProgressPercentage + 1;
+        }
+
+        private void backgroundWorkerPreprocess_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            progressBar.Maximum = tempMergeTagList.Count();
+            backgroundWorker.RunWorkerAsync();
         }
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -122,15 +98,20 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
                 }
                 writer.WriteLine(line);
                 lineNumber++;
-
             }
 
             reader.Close();
             writer.Close();
         }
 
+        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar.Value = e.ProgressPercentage;
+        }
+
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
     }
