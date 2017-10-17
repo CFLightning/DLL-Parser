@@ -76,26 +76,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-        //public static bool MergeTagsPerChange(string mergeString, string inputFilePath, string outputFileName = "")
-        //{
-        //    // MODfrom|>|MODto|#|MODfrom|>|MODto|#|...
-            
-        //    //List<string> mergeList = mergeString.Split(new string[] { "|#|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-        //    MergeTool mTool = new MergeTool(inputFilePath);
-        //    foreach (var merge in MergeTool.GetMergePairList(mergeString))
-        //    {
-        //        mTool.FindTagsToMerge(merge);
-        //        if (!mTool.Merge())
-        //        {
-        //            Console.WriteLine("MERGE ERROR");
-        //            return false;
-        //        }
-        //    }
-        //    System.Windows.Forms.MessageBox.Show("asd");
-        //    MergeTool.SaveFile(outputFileName);
-        //    return true;
-        //}
-
         public static bool RunMergeProcess(string mergeString, string inputFilePath, string outputFilePath)
         {
             merge.MergeProgress mergeProcess = new merge.MergeProgress(mergeString, inputFilePath, outputFilePath);
@@ -142,7 +122,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         public static string PassAllModificationTags(string inputPath, bool highAccuracy)
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
-            return TagDetection.GetModificationString(inputPath);
+            //return TagDetection.GetModificationString(inputPath);
+            PassAllModificationProgress progress = new PassAllModificationProgress(inputPath);
+            progress.ShowDialog();
+            return progress.ReturnModificationString();
         }
 
         static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();

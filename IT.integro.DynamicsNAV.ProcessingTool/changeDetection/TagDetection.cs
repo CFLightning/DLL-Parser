@@ -318,7 +318,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return string.Join(",", mods.ToArray());
         }
         
-        static private void FindTagsToRepo(string[] codeLines)
+        static public void FindTagsToRepo(string[] codeLines)
         {
             char[] separator = new char[] { ' ' };
             if (TagRepo.tagObject == null)

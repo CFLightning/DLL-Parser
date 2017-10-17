@@ -43,6 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="changeDetection\FlagDetection.cs" />
+    <Compile Include="changeDetection\PassAllModificationProgress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="changeDetection\PassAllModificationProgress.Designer.cs">
+      <DependentUpon>PassAllModificationProgress.cs</DependentUpon>
+    </Compile>
     <Compile Include="changeDetection\TagDetection.cs" />
     <Compile Include="changeDetection\TriggerDetection.cs" />
     <Compile Include="fileSplitter\MergeTool.cs" />
@@ -68,6 +74,9 @@
     <Compile Include="saveTool\SaveTool.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="changeDetection\PassAllModificationProgress.resx">
+      <DependentUpon>PassAllModificationProgress.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="merge\MergeProgress.resx">
       <DependentUpon>MergeProgress.cs</DependentUpon>
     </EmbeddedResource>
