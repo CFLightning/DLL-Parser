@@ -29,6 +29,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             FileInfo fileInfo = new FileInfo(inputFilePath);
             progressBar.Maximum = (int)fileInfo.Length;
             backgroundWorker.RunWorkerAsync();
+            timer1.Start();
         }
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -42,7 +43,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             List<string> mods = new List<string>();
             List<string> tags = new List<string>();
 
-            int buffsize = 100;
+            int buffsize = 10000;
             string[] codeLine = new string[buffsize];
             int i = 0;
             int bytes = 0;
@@ -78,6 +79,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            timer1.Stop();
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
@@ -85,6 +87,22 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         public string ReturnModificationString()
         {
             return outputModificationString;
+        }
+
+        int minutes;
+        int seconds;
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            seconds++;
+            if (seconds % 60 == 0)
+                minutes++;
+            textBox1.Text = minutes.ToString().PadLeft(2,'0') + ":" + seconds.ToString().PadLeft(2, '0');
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

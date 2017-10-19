@@ -53,6 +53,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
         {
             progressBarPreprocess.Maximum = mergePairList.Count();
             backgroundWorkerPreprocess.RunWorkerAsync();
+            timer1.Start();
         }
 
         private void backgroundWorkerPreprocess_DoWork(object sender, DoWorkEventArgs e)
@@ -113,6 +114,17 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
         {
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        int minutes;
+        int seconds;
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            seconds++;
+            if (seconds % 60 == 0)
+                minutes++;
+            textBox1.Text = minutes.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0');
         }
     }
 }
