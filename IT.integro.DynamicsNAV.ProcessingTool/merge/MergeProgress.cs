@@ -87,7 +87,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
             int lineNumber = 1;
             int tagNumber = 0;
 
-            // Edit lines from list
+            // Edit lines on list
             while ((line = reader.ReadLine()) != null)
             {
                 if (tagNumber < tempMergeTagList.Count() && tempMergeTagList[tagNumber].inLine == lineNumber)

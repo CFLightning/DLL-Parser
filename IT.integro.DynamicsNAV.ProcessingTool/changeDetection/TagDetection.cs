@@ -31,8 +31,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static private Regex[] DefinePatterns()
         {
-            string lineFrontComment = @"^\s*\/\/\s*";                        // BEGIN,AND
-            string lineBackComment = @" *[^\s\/{2}]+.*\/\/ *";             // OTHER
+            string lineFrontComment = @"^\s*\/{2}\s*";                        // BEGIN,AND
+            string lineBackComment = @" *[^\s\/{2,}]+.*\/{2,} *";             // OTHER
 
             //string regDate = @"(\d{2,4}.\d{2}.\d{2,4})?";
             //string regPrefix = @"((\w)*\/)?";
@@ -97,10 +97,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static public void SetHighAccuracy()
         {
-            string lineBackComment = @" *[^\s/{2}]+.*// *";
+            string lineBackComment = @" *[^\s\/{2,}]+.*\/{2,} *";
             List<string> otherPatternParts = new List<string>();
-            otherPatternParts.Add(regITPrefix + regMod + @" *$");
             otherPatternParts.Add(regITPrefix + regMod + @" *(?i)/S/E$");
+            otherPatternParts.Add(regITPrefix + regMod + @" *$");
             string otherPattern = "(" + lineBackComment + otherPatternParts[0] + ")";
             for (int i = 1; i < otherPatternParts.Count; i++)
                 otherPattern += "|(" + lineBackComment + otherPatternParts[i] + ")";
@@ -321,7 +321,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static public void FindTagsToRepo(string[] codeLines)
         {
             char[] separator = new char[] { ' ' };
-            if (TagRepo.tagObject == null)
+            if (TagRepo.tagObject == string.Empty)
                 TagRepo.tagObject = codeLines[0];
             TagRepo.Tags tag = new TagRepo.Tags();
 

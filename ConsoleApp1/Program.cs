@@ -18,24 +18,24 @@ namespace ConsoleApp1
                 Console.WriteLine(mod);
             Console.WriteLine(Environment.NewLine);
 
-            //  Merge
-            string mergeString = "001|>|MERGE001|#|192|>|MERGE192|#|010|>|MERGE010|#|NAV2015PL/000|>|MERGENAV2015PL/000|#|010|>|M010|#|022|>|M022|#|017|>|M017";
-            string outPath = @"C:\FILES\out2.txt";
-            WatchStep();
-            WatchStep("Per change");
-            ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
-            WatchStep("By line");
+            ////  Merge
+            //string mergeString = "001|>|MERGE001|#|192|>|MERGE192|#|010|>|MERGE010|#|NAV2015PL/000|>|MERGENAV2015PL/000|#|010|>|M010|#|022|>|M022|#|017|>|M017";
+            //string outPath = @"C:\FILES\out2.txt";
+            //WatchStep();
+            //WatchStep("Per change");
+            //ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
+            //WatchStep("By line");
 
-            inPath = outPath;
-            allMods = ProcessFile.PassAllModificationTags(inPath, true);
-            foreach (string mod in allMods.Split(','))
-                Console.WriteLine(mod);
+            //inPath = outPath;
+            //allMods = ProcessFile.PassAllModificationTags(inPath, true);
+            //foreach (string mod in allMods.Split(','))
+            //    Console.WriteLine(mod);
 
             //  RunProcessing
             //Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"", true, allMods));
 
             //  RunPreview
-            // Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
+             Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
 
 
             Console.WriteLine(Environment.NewLine + "Finish.");
