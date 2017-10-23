@@ -286,29 +286,30 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return modList;
         }
 
+        static List<string> RestrictedWords = new List<string>
+        {
+            "ASSERTERROR",
+            "BEGIN",
+            "CASE",
+            "DO",
+            "DOWNTO",
+            "ELSE",
+            "END",
+            "EXIT",
+            "FOR",
+            "IF",
+            "OF",
+            "REPEAT",
+            "THEN",
+            "TO",
+            "UNTIL",
+            "WHILE",
+            "WITH",
+            "OR"
+        };
+
         static public bool ContainsRestrictedWords(string tag)
         {
-            List<string> RestrictedWords = new List<string>
-            {
-                "ASSERTERROR",
-                "BEGIN",
-                "CASE",
-                "DO",
-                "DOWNTO",
-                "ELSE",
-                "END",
-                "EXIT",
-                "FOR",
-                "IF",
-                "OF",
-                "REPEAT",
-                "THEN",
-                "TO",
-                "UNTIL",
-                "WHILE",
-                "WITH",
-                "OR"
-            };
             foreach(string word in RestrictedWords)
             {
                 if (tag == word)
@@ -354,7 +355,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             while ((line = inputfile.ReadLine()) != null)
             {
                 string[] codeLine = line.Split('\n'); //Replace("\r", "").
-                FindTagsToRepo(codeLine);
+                FindTagsToRepo(ref codeLine);
             }
             inputfile.Close();
             
@@ -364,19 +365,21 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             
             return string.Join(",", mods.ToArray());
         }
-        
-        static public void FindTagsToRepo(string[] codeLines)
+
+        static char[] separator = new char[] { ' ' };
+        static string slashComment = @"//";
+        static string objectComment = "OBJECT ";
+        static public void FindTagsToRepo(ref string[] codeLines)
         {
-            char[] separator = new char[] { ' ' };
             if (TagRepo.tagObject == string.Empty)
                 TagRepo.tagObject = codeLines[0];
-            TagRepo.Tags tag = new TagRepo.Tags();
-
+            
             foreach (var line in codeLines)
             {
                 TagRepo.lineNo++;
-                if (line.Contains(@"//"))
+                if (line.Contains(slashComment))
                 {
+                    TagRepo.Tags tag = new TagRepo.Tags();
                     tag.comment = line.TrimStart(' ');
                     tag.inLine = TagRepo.lineNo;
                     tag.inObject = TagRepo.tagObject;
@@ -390,7 +393,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                     }
                     TagRepo.fullTagList.Add(tag);
                 }
-                else if (line.StartsWith("OBJECT "))
+                else if (line.StartsWith(objectComment))
                 {
                     TagRepo.tagObject = line;
                 }

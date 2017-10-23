@@ -9,7 +9,7 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
 
-            string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
+            string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia.txt";
             //string inPath = @"C:\FILES\Object.txt";
 
                 //  PassAllModifications

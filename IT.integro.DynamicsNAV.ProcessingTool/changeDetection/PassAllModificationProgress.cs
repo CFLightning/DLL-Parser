@@ -16,11 +16,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
     {
         string inputFilePath;
         string outputModificationString;
+        int buffsize;
 
-        public PassAllModificationProgress(string inputFilePath)
+        public PassAllModificationProgress(string inputFilePath, int buffsize)
         {
             InitializeComponent();
             this.inputFilePath = inputFilePath;
+            this.buffsize = buffsize;
         }
 
         private void PassAllModificationProgress_Load(object sender, EventArgs e)
@@ -38,29 +40,29 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             TagRepository.DeleteFiles();
 
             StreamReader inputfile = new StreamReader(inputFilePath, Encoding.GetEncoding("ISO-8859-1"));
-
-            string line;
+            
             List<string> mods = new List<string>();
             List<string> tags = new List<string>();
 
-            int buffsize = 10000;
             string[] codeLine = new string[buffsize];
             int i = 0;
             int bytes = 0;
-            while ((line = inputfile.ReadLine()) != null)
+
+            while ((codeLine[i] = inputfile.ReadLine()) != null)
             {
-                codeLine[i++] = line;
-                bytes += System.Text.ASCIIEncoding.ASCII.GetByteCount(line);
-                if (i == buffsize)
+                bytes += System.Text.ASCIIEncoding.ASCII.GetByteCount(codeLine[i]);
+                if (++i == buffsize)
                 {
-                    TagDetection.FindTagsToRepo(codeLine);
+                    TagDetection.FindTagsToRepo(ref codeLine);
                     backgroundWorker.ReportProgress(bytes);
                     i = 0;
                     bytes = 0;
                     Array.Clear(codeLine, 0, codeLine.Count());
+                    //ProcessFile.WatchStep();
                 }
             }
-            TagDetection.FindTagsToRepo(codeLine.Where(cl => cl != null).ToArray());
+            string[] lastCodeLine = codeLine.Where(cl => cl != null).ToArray();
+            TagDetection.FindTagsToRepo(ref lastCodeLine);
             backgroundWorker.ReportProgress(bytes);
             inputfile.Close();
 
@@ -101,11 +103,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 minutes++;
             }
             textBox1.Text = minutes.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0');
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

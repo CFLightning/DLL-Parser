@@ -172,13 +172,19 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return documentationModifications.Split(',').ToList();
         }
 
-        public static string PassAllModificationTags(string inputPath, bool highAccuracy)
+        public static string PassAllModificationTagsProcess(string inputPath, bool highAccuracy)
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
             //return TagDetection.GetModificationString(inputPath);
-            PassAllModificationProgress progress = new PassAllModificationProgress(inputPath);
+            PassAllModificationProgress progress = new PassAllModificationProgress(inputPath, 10000);
             progress.ShowDialog();
             return progress.ReturnModificationString();
+        }
+
+        public static string PassAllModificationTags(string inputPath, bool highAccuracy)
+        {
+            if (highAccuracy) TagDetection.SetHighAccuracy();
+            return TagDetection.GetModificationString(inputPath);
         }
 
         static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
@@ -190,7 +196,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 Console.WriteLine(watch.Elapsed.TotalSeconds.ToString());
             }
             watch.Restart();
-            Console.WriteLine(comment + ":");
+            if (comment != "")
+                Console.WriteLine(comment + ":");
         }
     }
 }
