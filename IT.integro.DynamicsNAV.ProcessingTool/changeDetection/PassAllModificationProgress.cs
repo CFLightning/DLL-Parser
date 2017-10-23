@@ -96,8 +96,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         {
             seconds++;
             if (seconds % 60 == 0)
+            {
+                seconds = 0;
                 minutes++;
-            textBox1.Text = minutes.ToString().PadLeft(2,'0') + ":" + seconds.ToString().PadLeft(2, '0');
+            }
+            textBox1.Text = minutes.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0');
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

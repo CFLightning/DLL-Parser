@@ -21,7 +21,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             SaveTool.SetFullPermission(ref directory);
 
             string currProcess;
-            CommonProgressBar progressBar = new CommonProgressBar(10);
+            CommonProgressBar progressBar = new CommonProgressBar("Full Processing", 10);
             progressBar.Show();
 
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
@@ -89,17 +89,41 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             DirectoryInfo directory = Directory.CreateDirectory(outputPath);
             SaveTool.SetFullPermission(ref directory);
 
+            string currProcess;
+            CommonProgressBar progressBar = new CommonProgressBar("Preview Processing", 5);
+            progressBar.Show();
+
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
+
+            SaveTool.SaveChangesToFiles(outputPath, expModifications);
+            SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
+            
+            currProcess = "Splitting file";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             FileSplitter.SplitFile(inputFilePath);
-            //IndentationChecker.CheckIndentations();
+
             reduceObjects(expModifications);
+
+            currProcess = "Searching for changes";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
                 return "ERROR404";
+
+            currProcess = "Cleaning code of changes";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             ModificationCleanerTool.CleanChangeCode();
-            //DocumentationTrigger.UpdateDocumentationTrigger();
+
+            currProcess = "Saving changes to files";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             SaveTool.SaveChangesToFiles(outputPath, expModifications);
-            //SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
-            SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
+
+            WatchStep();
+            progressBar.Close();
+
             ChangeClassRepository.changeRepository.Clear();
             ObjectClassRepository.objectRepository.Clear();
             return outputPath;

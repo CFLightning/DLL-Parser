@@ -52,6 +52,10 @@
             this.textBox1.Text = "00:00";
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // labelCurrProcess
             // 
             this.labelCurrProcess.AutoSize = true;
