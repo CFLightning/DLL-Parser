@@ -14,7 +14,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static string regMod;
         static string regModNoSlash;
         static string regModNAV;
-        static string regITPrefix = @"(IT\/)?";
+        static string regITPrefix;
+        static string regEnd;
+        static string lineFrontComment;
+        static string lineBackComment;
 
         static TagDetection()
         {
@@ -24,6 +27,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             regModNoSlash = @"(?<mod>[A-Z0-9._-]+)";
             regModNAV = @"(?<mod>NAV[A-Z0-9\/._-]+)";
             regITPrefix = @"(IT\/)?";
+            regEnd = @".?$";
+            lineFrontComment = @"^\s*\/{2}\s*";
+            lineBackComment = @" *[^\s\/{2,}]+.*\/{2,} *";
+
             DefinePatterns();
         }
 
@@ -31,13 +38,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static private Regex[] DefinePatterns()
         {
-            string lineFrontComment = @"^\s*\/{2}\s*";                        // BEGIN,AND
-            string lineBackComment = @" *[^\s\/{2,}]+.*\/{2,} *";             // OTHER
-
             //string regDate = @"(\d{2,4}.\d{2}.\d{2,4})?";
             //string regPrefix = @"((\w)*\/)?";
             //string regDigitalSuffix = @"(\/\d*)?";
-            string regEnd = @".?$";
 
             List<Regex[]> PatternList = new List<Regex[]>();
 
@@ -94,17 +97,61 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
             return tagPatterns;
         }
-
+        /// <summary>
+        /// General regex definition
+        /// </summary>
         static public void SetHighAccuracy()
         {
-            string lineBackComment = @" *[^\s\/{2,}]+.*\/{2,} *";
+            List<string> beginPatternParts = new List<string>();
+            beginPatternParts.Add(@"<-+ *" + regMod + regEnd);
+            beginPatternParts.Add(regMod + @" *(?i)((begin)|(start))" + regEnd);
+            beginPatternParts.Add(regMod + @" *(?i)(\/S|\/B)" + regEnd);
+//            beginPatternParts.Add(@"START\/" + regModNAV + regEnd);
+            beginPatternParts.Add(@"START\/" + regMod + regEnd);
+
+            List<string> endPatternParts = new List<string>();
+            endPatternParts.Add(@"-+> *" + regITPrefix + regMod + regEnd);
+            endPatternParts.Add(regMod + @" *(?i)((end)|(stop))" + regEnd);
+            endPatternParts.Add(regMod + @" *(?i)/E" + regEnd);
+//            endPatternParts.Add(@"STOP ?\/" + regModNAV + regEnd);
+            endPatternParts.Add(@"STOP ?\/" + regMod + regEnd);
+
             List<string> otherPatternParts = new List<string>();
-            otherPatternParts.Add(regITPrefix + regMod + @" *(?i)/S/E$");
-            otherPatternParts.Add(regITPrefix + regMod + @" *$");
+            otherPatternParts.Add(regITPrefix + regMod + @" *(?i)/S/E" + regEnd);
+            otherPatternParts.Add(regITPrefix + regMod + @" *" + regEnd);
+            
+            Regex rgxBegin, rgxEnd, rgxOther;
+            Regex[] rgxPair;
+
+            if (beginPatternParts.Count == endPatternParts.Count)
+                for (int i = 0; i < beginPatternParts.Count; i++)
+                {
+                    rgxBegin = new Regex(lineFrontComment + beginPatternParts[i]);
+                    rgxEnd = new Regex(lineFrontComment + endPatternParts[i]);
+                    rgxPair = new Regex[2];
+                    rgxPair[(int)Marks.BEGIN] = rgxBegin;
+                    rgxPair[(int)Marks.END] = rgxEnd;
+                    tagPairPattern.Add(rgxPair);
+                }
+
+            string endPattern = "(" + lineFrontComment + endPatternParts[0] + ")";
+            for (int i = 1; i < endPatternParts.Count; i++)
+                endPattern += "|(" + lineFrontComment + endPatternParts[i] + ")";
+
+            string beginPattern = "(" + lineFrontComment + beginPatternParts[0] + ")";
+            for (int i = 1; i < beginPatternParts.Count; i++)
+                beginPattern += "|(" + lineFrontComment + beginPatternParts[i] + ")";
+
             string otherPattern = "(" + lineBackComment + otherPatternParts[0] + ")";
             for (int i = 1; i < otherPatternParts.Count; i++)
-                otherPattern += "|(" + lineBackComment + otherPatternParts[i] + ")";
-            Regex rgxOther = new Regex(otherPattern);
+                otherPattern += "|(" + lineBackComment + otherPatternParts[i] + ")"; // CHANGEEE
+
+            rgxBegin = new Regex(beginPattern);
+            rgxEnd = new Regex(endPattern);
+            rgxOther = new Regex(otherPattern);
+
+            tagPatterns[(int)Marks.BEGIN] = rgxBegin;
+            tagPatterns[(int)Marks.END] = rgxEnd;
             tagPatterns[(int)Marks.OTHER] = rgxOther;
         }
 

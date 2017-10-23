@@ -8,8 +8,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
-using System.Security.AccessControl;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool
 {
@@ -22,30 +20,61 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             DirectoryInfo directory = Directory.CreateDirectory(outputPath);
             SaveTool.SetFullPermission(ref directory);
 
+            string currProcess;
+            CommonProgressBar progressBar = new CommonProgressBar(10);
+            progressBar.Show();
+
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
             List<string> docModifications = PrepareDocProcessing(documentationModifications);
-            WatchStep();
+
+            currProcess = "Splitting file";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             FileSplitter.SplitFile(inputFilePath);
-            WatchStep();
+
+            currProcess = "Checking indentations";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             IndentationChecker.CheckIndentations();
-            WatchStep();
+
+            currProcess = "Searching for changes";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
-            {
                 return "ERROR404";
-            }
-            WatchStep();
+
+            currProcess = "Cleaning code of changes";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             ModificationCleanerTool.CleanChangeCode();
-            WatchStep();
+
+            currProcess = "Updating documentation trigger";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             DocumentationTrigger.UpdateDocumentationTrigger(docModifications);
-            WatchStep();
+
+            currProcess = "Saving objects to files";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             SaveTool.SaveObjectsToFiles(outputPath);
-            WatchStep();
+
+            currProcess = "Saving changes to files";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             SaveTool.SaveChangesToFiles(outputPath, expModifications);
-            WatchStep();
+
+            currProcess = "Saving documentation file";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
-            WatchStep();
+
+            currProcess = "Saving objects of modification";
+            WatchStep(currProcess);
+            progressBar.PerformStep(currProcess);
             SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
+
             WatchStep();
+            progressBar.Close();
 
             ChangeClassRepository.changeRepository.Clear();
             ObjectClassRepository.objectRepository.Clear();
@@ -134,9 +163,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             if (watch.IsRunning)
             {
                 watch.Stop();
-                Console.WriteLine(watch.Elapsed.TotalSeconds.ToString() + "\t" + comment);
+                Console.WriteLine(watch.Elapsed.TotalSeconds.ToString());
             }
             watch.Restart();
+            Console.WriteLine(comment + ":");
         }
     }
 }

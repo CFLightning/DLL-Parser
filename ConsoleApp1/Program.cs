@@ -32,10 +32,10 @@ namespace ConsoleApp1
             //    Console.WriteLine(mod);
 
             //  RunProcessing
-            //Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"", true, allMods));
+            Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"", true, allMods));
 
             //  RunPreview
-             Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
+             //Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
 
 
             Console.WriteLine(Environment.NewLine + "Finish.");
