@@ -58,7 +58,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                     bool startFlag = false;
                     int nesting = 0;
                     string trigger = "";
-                    bool fieldFlag = false, actionFlag = false, controlFlag = false, openControlFlag = false;
+                    bool fieldFlag = false, actionFlag = false, controlFlag = false, openControlFlag = false, rdlFlag = false;
                     string fieldName = "", sourceExpr = "", description = "", fieldContent = "";
 
                     while (null != (line = reader.ReadLine()))
@@ -90,6 +90,18 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                             }
                             else if (controlFlag == true && FlagDetection.DetectIfControlEndFlag(line))
                                 controlFlag = false;
+                        }
+                        else if (obj.Type == "Report")   //  ommit table rdldata
+                        {
+                            if (!rdlFlag)
+                            {
+                                rdlFlag = FlagDetection.DetectIfTableRDLBegin(line);
+                            }
+                            else if (rdlFlag)
+                            {
+                                if (rdlFlag = !FlagDetection.DetectIfTableRDLEnd(line))
+                                    continue;
+                            }
                         }
 
                         if (startFlag == true)

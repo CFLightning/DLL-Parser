@@ -187,6 +187,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return TagDetection.GetModificationString(inputPath);
         }
 
+        public static string PassAllModificationTagsAfterMerge(string inputPath)
+        {
+            return TagDetection.GetModificationStringUsingRepo(inputPath);
+        }
+
         static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
         public static void WatchStep(string comment = "")
         {

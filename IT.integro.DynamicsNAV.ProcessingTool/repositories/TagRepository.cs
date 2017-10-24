@@ -21,32 +21,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
         static public List<Tags> fullTagList = new List<Tags>();
         static public string tagObject;
         static public int lineNo = 0;
+        static public bool flagReport;
+        static public bool flagRDLDATA;
 
         static string pathFullTagList = Path.GetTempPath() + @"NAVCommentTool\Full tag list.txt";
         static string pathTagList = Path.GetTempPath() + @"NAVCommentTool\Tag list.txt";
         static string pathAbandoned = Path.GetTempPath() + @"NAVCommentTool\Abandoned comments.txt";
         static public string pathModInObj = Path.GetTempPath() + @"NAVCommentTool\Modifications in Object\";
         static public string pathObjWithMod = Path.GetTempPath() + @"NAVCommentTool\Objects with Modification\";
-
-        static public List<string> GetTagModList()
-        {
-            return TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.mod).ToList();
-        }
-
-        static public List<string> GetTagList()
-        {
-            return TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment).ToList();
-        }
-
-        static public List<string> GetAbandonedCommentList()
-        {
-            return TagRepository.fullTagList.Where(r => r.mod == null).Select(t => t.comment).ToList();
-        }
-
-        static public List<string> GetAllCommentList()
-        {
-            return TagRepository.fullTagList.Select(t => t.comment).ToList();
-        }
 
         static public List<string> GetModObjectList(string mod)
         {
@@ -113,12 +95,21 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
                 Directory.Delete(pathModInObj, true);
         }
 
-        static public void ClearRepo()
+        static public void ClearRepo(bool KillTags)
         {
-            fullTagList.Clear();
             tagObject = string.Empty;
             lineNo = 0;
+            flagReport = false;
+            flagRDLDATA = false;
+            if (KillTags)
+                fullTagList.Clear();
         }
 
+        static public bool CheckIfReport()
+        {
+            if (tagObject.StartsWith("OBJECT Report"))
+                return true;
+            return false;
+        }
     }
 }

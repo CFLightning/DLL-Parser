@@ -36,7 +36,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            TagRepository.ClearRepo();
+            TagRepository.ClearRepo(true);
             TagRepository.DeleteFiles();
 
             StreamReader inputfile = new StreamReader(inputFilePath, Encoding.GetEncoding("ISO-8859-1"));
@@ -53,7 +53,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 bytes += System.Text.ASCIIEncoding.ASCII.GetByteCount(codeLine[i]);
                 if (++i == buffsize)
                 {
-                    TagDetection.FindTagsToRepo(ref codeLine);
+                    TagDetection.FindTagsToRepo(codeLine);
                     backgroundWorker.ReportProgress(bytes);
                     i = 0;
                     bytes = 0;
@@ -62,7 +62,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 }
             }
             string[] lastCodeLine = codeLine.Where(cl => cl != null).ToArray();
-            TagDetection.FindTagsToRepo(ref lastCodeLine);
+            TagDetection.FindTagsToRepo(lastCodeLine);
             backgroundWorker.ReportProgress(bytes);
             inputfile.Close();
 
@@ -77,6 +77,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         {
             if (progressBar.Value + e.ProgressPercentage < progressBar.Maximum)
                 progressBar.Value += e.ProgressPercentage;
+            labelObject.Text = TagRepository.tagObject;
         }
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

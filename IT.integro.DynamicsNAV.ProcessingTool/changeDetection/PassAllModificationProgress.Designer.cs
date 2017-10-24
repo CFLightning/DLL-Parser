@@ -33,11 +33,12 @@
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.labelObject = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 12);
+            this.progressBar.Location = new System.Drawing.Point(12, 25);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(460, 23);
             this.progressBar.TabIndex = 0;
@@ -64,6 +65,14 @@
             this.textBox1.Text = "00:00";
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // labelObject
+            // 
+            this.labelObject.AutoSize = true;
+            this.labelObject.Location = new System.Drawing.Point(12, 9);
+            this.labelObject.Name = "labelObject";
+            this.labelObject.Size = new System.Drawing.Size(0, 13);
+            this.labelObject.TabIndex = 2;
+            // 
             // PassAllModificationProgress
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -71,6 +80,7 @@
             this.ClientSize = new System.Drawing.Size(484, 111);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.progressBar);
+            this.Controls.Add(this.labelObject);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "PassAllModificationProgress";
             this.Text = "PassAllModificationProgress";
@@ -86,5 +96,6 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label labelObject;
     }
 }

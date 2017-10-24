@@ -177,7 +177,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
         static public bool CheckIfTagInLine(string text)
         {
-            if (tagPatterns[(int)Marks.BEGIN].IsMatch(text) || tagPatterns[(int)Marks.END].IsMatch(text) || tagPatterns[(int)Marks.OTHER].IsMatch(text))
+            if (tagPatterns[(int)Marks.BEGIN].IsMatch(text))
+                return true;
+            else if (tagPatterns[(int)Marks.END].IsMatch(text))
+                return true;
+            else if (tagPatterns[(int)Marks.OTHER].IsMatch(text))
                 return true;
             else
                 return false;
@@ -204,13 +208,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             List<string> tagList = new List<string>();
             foreach (var line in codeLines)
             {
-                if (line.Contains(@"//"))
+                if (line.Contains(@"//") && line.TrimStart(' ').Length < 200)
                 {
                     if (CheckIfTagInLine(line))
                     {
                         tagList.Add(line);
                     }
                 }
+
             }
             return tagList;
         }
@@ -338,13 +343,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static public List<string> GetModyficationList(string code)
         {
             string[] codeLines = code.Replace("\r", "").Split('\n');
-            List<string> ret = FindModsInTags(FindTags(codeLines));
-            return ret.Union(GetFieldDescriptionTagList(code)).ToList();
+            List<string> tags = FindModsInTags(FindTags(codeLines));
+            List<string> descs = GetFieldDescriptionTagList(code);
+            return tags.Union(descs).ToList();
         }
 
         static public string GetModificationString(string path)
         {
-            TagRepo.ClearRepo();
+            TagRepo.ClearRepo(true);
             TagRepo.DeleteFiles();
 
             StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1"));
@@ -355,21 +361,58 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             while ((line = inputfile.ReadLine()) != null)
             {
                 string[] codeLine = line.Split('\n'); //Replace("\r", "").
-                FindTagsToRepo(ref codeLine);
+                FindTagsToRepo(codeLine);
             }
             inputfile.Close();
             
             mods = TagRepo.GetAllModList().Distinct().ToList();
-            
             TagRepo.SaveToFilesFull();
-            
+            return string.Join(",", mods.ToArray());
+        }
+
+        static public string GetModificationStringUsingRepo(string path)
+        {
+            TagRepo.ClearRepo(false);
+            TagRepo.DeleteFiles();
+
+            StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1"));
+
+            string line;
+            List<string> mods = new List<string>();
+            List<string> tags = new List<string>();
+            int lineNumber = 1;
+            int tagNumber = 0;
+            int tagCount = TagRepo.fullTagList.Count();
+
+            while ((line = inputfile.ReadLine()) != null && tagNumber < TagRepo.fullTagList.Count())
+            {
+                if (TagRepo.fullTagList[tagNumber].inLine == lineNumber)
+                {
+                    TagRepo.Tags tag = TagRepo.fullTagList[tagNumber];
+                    tag.comment = line.TrimStart(' ');
+                    if (CheckIfTagInLine(line))
+                    {
+                        if (!ContainsRestrictedWords(GetTagedModification(line)))
+                        {
+                            tag.mod = GetTagedModification(line);
+                        }
+                    }
+
+                    TagRepo.fullTagList.Add(tag);
+                    tagNumber++;
+                }
+                lineNumber++;
+            }
+            TagRepo.fullTagList.RemoveRange(0, tagCount);
+            inputfile.Close();
+
+            mods = TagRepo.GetAllModList().Distinct().ToList();
+            TagRepo.SaveToFilesFull();
             return string.Join(",", mods.ToArray());
         }
 
         static char[] separator = new char[] { ' ' };
-        static string slashComment = @"//";
-        static string objectComment = "OBJECT ";
-        static public void FindTagsToRepo(ref string[] codeLines)
+        static public void FindTagsToRepo(string[] codeLines)
         {
             if (TagRepo.tagObject == string.Empty)
                 TagRepo.tagObject = codeLines[0];
@@ -377,7 +420,22 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             foreach (var line in codeLines)
             {
                 TagRepo.lineNo++;
-                if (line.Contains(slashComment))
+
+                //  Ommit RDLDATA section of Report
+                if (TagRepo.flagReport)
+                {
+                    if (!TagRepo.flagRDLDATA)
+                    {
+                        TagRepo.flagRDLDATA = FlagDetection.DetectIfTableRDLBegin(line);
+                    }
+                    else if (TagRepo.flagRDLDATA)
+                    {
+                        if (TagRepo.flagRDLDATA = !FlagDetection.DetectIfTableRDLEnd(line))
+                        continue;
+                    }
+                }
+
+                if (line.Contains(@"//"))
                 {
                     TagRepo.Tags tag = new TagRepo.Tags();
                     tag.comment = line.TrimStart(' ');
@@ -393,9 +451,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                     }
                     TagRepo.fullTagList.Add(tag);
                 }
-                else if (line.StartsWith(objectComment))
+                else if (line.StartsWith("OBJECT "))
                 {
                     TagRepo.tagObject = line;
+                    TagRepo.flagReport = TagRepo.CheckIfReport();
                 }
             }
         }

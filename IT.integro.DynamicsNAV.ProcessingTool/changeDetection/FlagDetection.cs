@@ -76,6 +76,22 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 return false;
         }
 
+        static public bool DetectIfTableRDLBegin(string line)
+        {
+            if (line == "  RDLDATA")
+                return true;
+            else
+                return false;
+        }
+
+        static public bool DetectIfTableRDLEnd(string line) //  rdl ends if object ends so detect new object
+        {
+            if (line.StartsWith("OBJECT "))
+                return true;
+            else
+                return false;
+        }
+
         static public string GetSourceExpr(string codeLine)
         {
             string SourceExpr = codeLine.Substring((codeLine.IndexOf("SourceExpr=") + "SourceExpr=".Length));
