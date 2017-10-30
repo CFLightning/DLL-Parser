@@ -13,7 +13,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 {
     public class ProcessFile
     {
-        public static string RunProcessing(string expectedModifications, string inputFilePath, string mappingFilePath, bool highAccuracy, string documentationModifications) //highAccuracy = true -> find more tags, even bad ones
+        public static string RunProcessingOld(string expectedModifications, string inputFilePath, string mappingFilePath, bool highAccuracy, string documentationModifications) //highAccuracy = true -> find more tags, even bad ones
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
@@ -21,60 +21,49 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             SaveTool.SetFullPermission(ref directory);
 
             string currProcess;
-            CommonProgressBar progressBar = new CommonProgressBar("Full Processing", 10);
-            progressBar.Show();
 
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
             List<string> docModifications = PrepareDocProcessing(documentationModifications);
 
             currProcess = "Splitting file";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             FileSplitter.SplitFile(inputFilePath);
 
             currProcess = "Checking indentations";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             IndentationChecker.CheckIndentations();
 
             currProcess = "Searching for changes";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
+            ReduceObjects(expModifications);
             if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
                 return "ERROR404";
 
             currProcess = "Cleaning code of changes";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             ModificationCleanerTool.CleanChangeCode();
 
             currProcess = "Updating documentation trigger";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             DocumentationTrigger.UpdateDocumentationTrigger(docModifications);
 
             currProcess = "Saving objects to files";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             SaveTool.SaveObjectsToFiles(outputPath);
 
             currProcess = "Saving changes to files";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             SaveTool.SaveChangesToFiles(outputPath, expModifications);
 
             currProcess = "Saving documentation file";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
 
             currProcess = "Saving objects of modification";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
 
             WatchStep();
-            progressBar.Close();
 
             ChangeClassRepository.changeRepository.Clear();
             ObjectClassRepository.objectRepository.Clear();
@@ -82,7 +71,27 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             return outputPath;
         }
 
-        public static string RunPreview(string expectedModifications, string inputFilePath, bool highAccuracy)
+        public static string RunProcessing(string expectedModifications, string inputFilePath, string mappingFilePath, bool highAccuracy, string documentationModifications) //highAccuracy = true -> find more tags, even bad ones
+        {
+            if (highAccuracy) TagDetection.SetHighAccuracy();
+            string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
+            DirectoryInfo directory = Directory.CreateDirectory(outputPath);
+            SaveTool.SetFullPermission(ref directory);
+
+            List<string> expModifications = PrepareExpProcessing(expectedModifications);
+            List<string> docModifications = PrepareDocProcessing(documentationModifications);
+            bool[] processesMap = { true, true, true, true, true, true, true, true, true, true };
+
+            RunProcessingProgressBar progressBar = new RunProcessingProgressBar(processesMap, inputFilePath, outputPath, mappingFilePath, expModifications, docModifications);
+            progressBar.ShowDialog();
+
+            if (progressBar.DialogResult == System.Windows.Forms.DialogResult.OK)
+                return outputPath;
+            else
+                return "error";
+        }
+
+        public static string RunPreviewOld(string expectedModifications, string inputFilePath, bool highAccuracy)
         {
             if (highAccuracy) TagDetection.SetHighAccuracy();
             string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
@@ -90,8 +99,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             SaveTool.SetFullPermission(ref directory);
 
             string currProcess;
-            CommonProgressBar progressBar = new CommonProgressBar("Preview Processing", 5);
-            progressBar.Show();
 
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
 
@@ -100,33 +107,51 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             
             currProcess = "Splitting file";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             FileSplitter.SplitFile(inputFilePath);
 
-            reduceObjects(expModifications);
+            ReduceObjects(expModifications);
 
             currProcess = "Searching for changes";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             if (!ModificationSearchTool.FindAndSaveChanges(expModifications))
                 return "ERROR404";
 
             currProcess = "Cleaning code of changes";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             ModificationCleanerTool.CleanChangeCode();
+
+            currProcess = "Saving objects to files";
+            WatchStep(currProcess);
+            SaveTool.SaveObjectsToFiles(outputPath);
 
             currProcess = "Saving changes to files";
             WatchStep(currProcess);
-            progressBar.PerformStep(currProcess);
             SaveTool.SaveChangesToFiles(outputPath, expModifications);
 
             WatchStep();
-            progressBar.Close();
 
             ChangeClassRepository.changeRepository.Clear();
             ObjectClassRepository.objectRepository.Clear();
             return outputPath;
+        }
+
+        public static string RunPreview(string expectedModifications, string inputFilePath, bool highAccuracy) //highAccuracy = true -> find more tags, even bad ones
+        {
+            if (highAccuracy) TagDetection.SetHighAccuracy();
+            string outputPath = Path.GetTempPath() + @"NAVCommentTool\";
+            DirectoryInfo directory = Directory.CreateDirectory(outputPath);
+            SaveTool.SetFullPermission(ref directory);
+
+            List<string> expModifications = PrepareExpProcessing(expectedModifications);
+            bool[] processesMap = { true, false, true, true, false, false, true, false, false, true };
+
+            RunProcessingProgressBar progressBar = new RunProcessingProgressBar(processesMap, inputFilePath, outputPath, "", expModifications, new List<string>());
+            progressBar.ShowDialog();
+
+            if (progressBar.DialogResult == System.Windows.Forms.DialogResult.OK)
+                return outputPath;
+            else
+                return "error";
         }
 
         public static bool RunMergeProcess(string mergeString, string inputFilePath, string outputFilePath)
@@ -139,7 +164,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 return false;
         }
 
-        private static List<string> reduceObjects(List<string> expectedModifications)
+        public static List<string> ReduceObjects(List<string> expectedModifications)
         {
             List<string> objectsToSearch = new List<string>();
 

@@ -54,6 +54,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
             progressBarPreprocess.Maximum = mergePairList.Count();
             backgroundWorkerPreprocess.RunWorkerAsync();
             timer1.Start();
+            labelProcess.Text = "Preprocess";
         }
 
         private void backgroundWorkerPreprocess_DoWork(object sender, DoWorkEventArgs e)
@@ -76,6 +77,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
         {
             progressBar.Maximum = tempMergeTagList.Count();
             backgroundWorker.RunWorkerAsync();
+            labelProcess.Text = "Merging";
         }
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)

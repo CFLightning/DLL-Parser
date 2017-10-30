@@ -35,11 +35,12 @@
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.labelProcess = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // progressBarPreprocess
             // 
-            this.progressBarPreprocess.Location = new System.Drawing.Point(12, 12);
+            this.progressBarPreprocess.Location = new System.Drawing.Point(12, 38);
             this.progressBarPreprocess.Name = "progressBarPreprocess";
             this.progressBarPreprocess.Size = new System.Drawing.Size(460, 23);
             this.progressBarPreprocess.TabIndex = 0;
@@ -60,7 +61,7 @@
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 41);
+            this.progressBar.Location = new System.Drawing.Point(12, 67);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(460, 23);
             this.progressBar.TabIndex = 1;
@@ -68,7 +69,7 @@
             // textBox1
             // 
             this.textBox1.Enabled = false;
-            this.textBox1.Location = new System.Drawing.Point(422, 79);
+            this.textBox1.Location = new System.Drawing.Point(422, 12);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(50, 20);
             this.textBox1.TabIndex = 2;
@@ -80,11 +81,21 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // labelProcess
+            // 
+            this.labelProcess.AutoSize = true;
+            this.labelProcess.Location = new System.Drawing.Point(12, 15);
+            this.labelProcess.Name = "labelProcess";
+            this.labelProcess.Size = new System.Drawing.Size(45, 13);
+            this.labelProcess.TabIndex = 3;
+            this.labelProcess.Text = "Process";
+            // 
             // MergeProgress
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 111);
+            this.ClientSize = new System.Drawing.Size(484, 103);
+            this.Controls.Add(this.labelProcess);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.progressBarPreprocess);
@@ -105,5 +116,6 @@
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label labelProcess;
     }
 }

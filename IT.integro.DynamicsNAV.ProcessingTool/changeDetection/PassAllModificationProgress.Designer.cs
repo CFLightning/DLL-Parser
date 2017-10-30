@@ -38,7 +38,7 @@
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 25);
+            this.progressBar.Location = new System.Drawing.Point(12, 38);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(460, 23);
             this.progressBar.TabIndex = 0;
@@ -58,7 +58,7 @@
             // textBox1
             // 
             this.textBox1.Enabled = false;
-            this.textBox1.Location = new System.Drawing.Point(422, 79);
+            this.textBox1.Location = new System.Drawing.Point(422, 12);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(50, 20);
             this.textBox1.TabIndex = 1;
@@ -68,16 +68,17 @@
             // labelObject
             // 
             this.labelObject.AutoSize = true;
-            this.labelObject.Location = new System.Drawing.Point(12, 9);
+            this.labelObject.Location = new System.Drawing.Point(12, 15);
             this.labelObject.Name = "labelObject";
-            this.labelObject.Size = new System.Drawing.Size(0, 13);
+            this.labelObject.Size = new System.Drawing.Size(38, 13);
             this.labelObject.TabIndex = 2;
+            this.labelObject.Text = "Object";
             // 
             // PassAllModificationProgress
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 111);
+            this.ClientSize = new System.Drawing.Size(484, 74);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.labelObject);

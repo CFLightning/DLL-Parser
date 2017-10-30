@@ -51,11 +51,11 @@
     </Compile>
     <Compile Include="changeDetection\TagDetection.cs" />
     <Compile Include="changeDetection\TriggerDetection.cs" />
-    <Compile Include="CommonProgressBar.cs">
+    <Compile Include="RunProcessingProgressBar.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CommonProgressBar.Designer.cs">
-      <DependentUpon>CommonProgressBar.cs</DependentUpon>
+    <Compile Include="RunProcessingProgressBar.Designer.cs">
+      <DependentUpon>RunProcessingProgressBar.cs</DependentUpon>
     </Compile>
     <Compile Include="fileSplitter\MergeTool.cs" />
     <Compile Include="indentationChecker\IndentationChecker.cs" />
@@ -83,8 +83,8 @@
     <EmbeddedResource Include="changeDetection\PassAllModificationProgress.resx">
       <DependentUpon>PassAllModificationProgress.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CommonProgressBar.resx">
-      <DependentUpon>CommonProgressBar.cs</DependentUpon>
+    <EmbeddedResource Include="RunProcessingProgressBar.resx">
+      <DependentUpon>RunProcessingProgressBar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="merge\MergeProgress.resx">
       <DependentUpon>MergeProgress.cs</DependentUpon>
