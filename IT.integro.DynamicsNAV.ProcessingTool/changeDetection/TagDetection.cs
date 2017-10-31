@@ -27,7 +27,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             regModNoSlash = @"(?<mod>[A-Z0-9._-]+)";
             regModNAV = @"(?<mod>NAV[A-Z0-9\/._-]+)";
             regITPrefix = @"(IT\/)?";
-            regEnd = @".?$";
+            regEnd = @" *$";
             lineFrontComment = @"^\s*\/{2}\s*";
             lineBackComment = @" *[^\s\/{2,}]+.*\/{2,} *";
 

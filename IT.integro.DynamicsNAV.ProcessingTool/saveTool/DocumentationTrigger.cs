@@ -49,25 +49,44 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                     writer.WriteLine(line);
                 }
                 writer.WriteLine(line);
+
+                // Ommit All sections before CODE
                 while (null != (line = reader.ReadLine()))
                 {
+                    writer.WriteLine(line);
+                    if (line == "  CODE")
+                    {
+                        break;
+                    }
+                }
+
+                while (null != (line = reader.ReadLine())) 
+                {
+                    // Ommit detection if end of CODE section
+                    if (line == "  RDLDATA")
+                    {
+                        writer.WriteLine(line);
+                        while (null != (line = reader.ReadLine()))
+                        {
+                            writer.WriteLine(line);
+                        }
+                        break;
+                    }
+
                     if (line.StartsWith("    BEGIN"))
                     {
                         beginFlag = true;
-                        continue;
                     }
 
                     if (line.StartsWith("    {") && beginFlag)
                     {
                         bracketFlag = true;
                         bracketsExist = true;
-                        continue;
                     }
 
                     if (line.StartsWith("      Automated Documentation"))
                     {
                         documentationPrompt = true;
-                        continue;
                     }
 
                     if (line.StartsWith("    }") && bracketFlag)
@@ -76,13 +95,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         deleteFlag = false;
                         writing = true;
                         bracketsExist = true;
-                        continue;
                     }
 
                     if (line.StartsWith("    END") && beginFlag && bracketsExist)
                     {
                         beginFlag = false;
-                        continue;
                     }
 
                     if (line.StartsWith("    END.") && beginFlag && !bracketsExist)
@@ -91,7 +108,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         addBrackets = true;
                         deleteFlag = false;
                         beginFlag = false;
-                        continue;
                     }
 
                     if (line.StartsWith("      #") && documentationPrompt)

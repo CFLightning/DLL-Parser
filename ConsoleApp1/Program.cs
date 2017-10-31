@@ -9,32 +9,32 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             //string inPath = @"C:\Users\Administrator\Documents\FARUTEX\LIVE_ALL_17_10_2017.txt";
-            
-            string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
-            //string inPath = @"C:\FILES\Object.txt";
+            //string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
+            //string inPath = @"C:\FILES\Farutex_Report12.txt";
+            string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Modification Objects\Objects modificated in NAVPL8.00.txt";
 
-                //  PassAllModifications
-            //string allMods = ProcessFile.PassAllModificationTags(inPath, true);
+                //      PassAllModifications
+                //string allMods = ProcessFile.PassAllModificationTags(inPath, true);
             string allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);
             foreach (string mod in allMods.Split(','))
                 Console.WriteLine(mod);
             Console.WriteLine(Environment.NewLine);
 
-                //  Merge
-            //string mergeString = "IT/IL/01|>|IL01";
-            //string outPath = @"C:\FILES\out2.txt";
-            //ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
+            //      Merge
+            string mergeString = "IT /IL/01|>|IL01";
+            string outPath = @"C:\FILES\out2.txt";
+            ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
 
             //inPath = outPath;
             //allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);
             //foreach (string mod in allMods.Split(','))
             //    Console.WriteLine(mod);
 
-            //  RunProcessing
-            //Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"", true, allMods));
+            //      RunProcessing
+            Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"", true, allMods));
 
-            //  RunPreview
-            Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
+            //      RunPreview
+            //Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
 
 
             Console.WriteLine(Environment.NewLine + "Finish.");

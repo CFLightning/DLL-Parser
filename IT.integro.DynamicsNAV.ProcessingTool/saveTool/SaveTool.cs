@@ -18,7 +18,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             DirectoryInfo directory = Directory.CreateDirectory(objPath);
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
-                File.WriteAllText(path + @"\Objects\" + obj.Type + " " + obj.Number + " " + obj.Name + " .txt", obj.Contents);
+                File.WriteAllText(path + @"\Objects\" + obj.Type + " " + obj.Number + " " + obj.Name + ".txt", obj.Contents);
             }
             return true;
         }
@@ -76,8 +76,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             foreach (ChangeClass chg in changes)
             {
                 {
-                    if (File.Exists(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt"))
-                        File.Delete(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt");
+                    if (File.Exists(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + ".txt"))
+                        File.Delete(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + ".txt");
                 }
             }
 
@@ -88,7 +88,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 {
                     if(obj.changelog.GroupBy(x => x.ChangelogCode).Select(grp => grp.First()).ToList().Contains(chg))
                     {
-                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + " .txt", obj.Contents);
+                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + ".txt", obj.Contents);
                     }
                 }
             }

@@ -126,7 +126,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             labelCurrProcess.Text = processes[e.ProgressPercentage];
-            labelHistory.Text += textBox1.Text + " | " + labelCurrProcess.Text + Environment.NewLine;
+            labelHistory.Text += textBox1.Text + " - " + labelCurrProcess.Text + Environment.NewLine;
             progressBar1.Value = e.ProgressPercentage;
         }
 
