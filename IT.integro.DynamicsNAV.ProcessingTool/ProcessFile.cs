@@ -80,7 +80,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
             List<string> expModifications = PrepareExpProcessing(expectedModifications);
             List<string> docModifications = PrepareDocProcessing(documentationModifications);
-            bool[] processesMap = { true, true, true, true, true, true, true, true, true, true };
+            bool[] processesMap = { true, false, true, true, true, true, true, true, true, true };
 
             RunProcessingProgressBar progressBar = new RunProcessingProgressBar(processesMap, inputFilePath, outputPath, mappingFilePath, expModifications, docModifications);
             progressBar.ShowDialog();

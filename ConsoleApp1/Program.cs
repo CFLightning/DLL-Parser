@@ -11,7 +11,7 @@ namespace ConsoleApp1
             //string inPath = @"C:\Users\Administrator\Documents\FARUTEX\LIVE_ALL_17_10_2017.txt";
             //string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
             //string inPath = @"C:\FILES\Farutex_Report12.txt";
-            string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Modification Objects\Objects modificated in NAVPL8.00.txt";
+            string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Objects\Table 5 FinanceChargeTerms.txt";
 
                 //      PassAllModifications
                 //string allMods = ProcessFile.PassAllModificationTags(inPath, true);

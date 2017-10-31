@@ -64,7 +64,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                     while (null != (line = reader.ReadLine()))
                     {
                         if (TriggerDetection.DetectIfAnyTriggerInLine(line))
+                        {
                             trigger = TriggerDetection.GetTriggerName(line);
+                            if (TriggerDetection.DetectIfAnyTriggerInLine(line,true))
+                            {
+                                trigger += " (" + fieldName + ")";
+                            }
+                        }
 
                         // Flags
                         if (obj.Type == "Table")

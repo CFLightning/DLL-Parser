@@ -8,46 +8,150 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
     class TriggerDetection
     {
         private static List<String> triggers;
+        private static List<String> memberTriggers;
+        private static List<String> uniqueTriggers;
 
         static TriggerDetection()
         {
-            triggers = new List<string>
+            uniqueTriggers = new List<string>
             {
+                // Codeunit
+                "OnBeforeTestRun",
+                "OnAfterTestRun",
+                // Form
                 "OnInit",
-                "OnRun",
+                "OnOpenForm",
+                "OnQueryCloseForm",
+                "OnCloseForm",
+                "OnActivateForm",
+                "OnDeactivateForm",
+                "OnFindRecord",
+                "OnNextRecord",
+                "OnAfterGetRecord",
+                "OnAfterGetCurrRecord",
+                "OnBeforePutRecord",
+                "OnNewRecord",
+                "OnInsertRecord",
+                "OnModifyRecord",
+                "OnDeleteRecord",
+                "OnTimer",
+                "OnCreateHyperlink",
+                "OnHyperlink",
+                // DataPort
+                "OnAfterExportRecord",
+                "OnAfterFormatField",
+                "OnAfterImportRecord",
+                "OnBeforeEvaluateField",
+                "OnBeforeExportRecord",
+                "OnBeforeImportRecord",
+                "OnInitDataPort",
+                "OnPostDataPort",
+                "OnPreDataPort",
+                // Report
+                "OnInitReport",
+                "OnPreReport",
+                "OnPostReport",
+                "OnCreateHyperlink",
+                "OnHyperlink",
+                // Data Item
+                "OnPreDataItem",
+                "OnAfterGetRecord",
+                "OnPostDataItem",
+                // Section
+                "OnPreSection",
+                "OnPostSection",
+                // Table
+                "OnInsert",
+                "OnModify",
+                "OnDelete",
+                "OnRename",
+                // XMLPort
+                "OnAfterAssignField",
+                "OnAfterAssignVariable",
+                "OnAfterGetField",
+                "OnAfterGetRecord",
+                "OnAfterInitRecord",
+                "OnAfterInsertRecord",
+                "OnBeforeInsertRecord",
+                "OnBeforePassField",
+                "OnBeforePassVariable",
+                "OnInitXMLport",
+                "OnPreXMLport",
+                "OnPostXMLport",
+                "OnPreXMLItem",
+                // Page
+                "OnInit",
                 "OnOpenPage",
                 "OnClosePage",
                 "OnFindRecord",
                 "OnNextRecord",
                 "OnAfterGetRecord",
                 "OnNewRecord",
-                "OnInsert",
-                "OnModify",
-                "OnDelete",
                 "OnInsertRecord",
                 "OnModifyRecord",
                 "OnDeleteRecord",
                 "OnQueryClosePage",
-                "OnAfterGetCurrRecord",
-                "OnPreDataItem",
-                "OnPostDataItem",
+                // Codeunit
+                "OnBeforeTestRun",
+                "OnAfterTestRun"
+            };
+
+            memberTriggers = new List<string>
+            {
+                // Form Control
+                "OnActivate",
+                "OnDeactivate",
+                "OnFormat",
+                "OnBeforeInput",
+                "OnInputChange",
+                "OnAfterInput",
+                "OnPush",
+                "OnValidate",
+                "OnAfterValidate",
+                "OnLookup",
+                "OnDrillDown",
+                "OnAssistEdit",
+                "OnActivate",
+                "OnDeactivate",
+                "OnFormat",
+                "OnBeforeInput",
+                "OnInputChange",
+                // Table (Fields)
+                "OnValidate",
+                "OnLookup",
+                // Page (Fields)
                 "OnValidate",
                 "OnLookup",
                 "OnDrillDown",
                 "OnAssistEdit",
                 "OnControlAddin",
-                "OnAction",
-                "PROCEDURE"
+                // Page (Action)
+                "OnAction"
             };
+
+            triggers = uniqueTriggers.Union(memberTriggers).ToList();
+            triggers.Add("PROCEDURE");
         }
 
-        static public bool DetectIfAnyTriggerInLine(string line)
+        static public bool DetectIfAnyTriggerInLine(string line, bool memberTrigger = false)
         {
-            foreach (var trigger in triggers)
+            if (!memberTrigger)
             {
-                if (DetectIfSpecifiedTriggerInLine(trigger, line))
-                    return true;
+                foreach (var trigger in triggers)
+                {
+                    if (DetectIfSpecifiedTriggerInLine(trigger, line))
+                        return true;
+                }
             }
+            else
+            {
+                foreach (var trigger in memberTriggers)
+                {
+                    if (DetectIfSpecifiedTriggerInLine(trigger, line))
+                        return true;
+                }
+            }
+
             return false;
         }
 
@@ -97,7 +201,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             }
             return "";
         }
-
     }
 
 }
