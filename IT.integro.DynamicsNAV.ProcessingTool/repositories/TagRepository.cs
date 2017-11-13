@@ -12,7 +12,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
     {
         public struct Tags
         {
-            public string comment;
+            public string line;
             public string mod;
             public string inObject;
             public int inLine;
@@ -59,7 +59,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
 
             string separator = "|#|";
                 //  Full Repository
-            string[] textFullTag = fullTagList.Select(s => s.inLine + separator + s.inObject + separator + s.comment + separator + s.mod).ToArray();
+            string[] textFullTag = fullTagList.Select(s => s.inLine + separator + s.inObject + separator + s.line + separator + s.mod).ToArray();
             File.WriteAllLines(pathFullTagList, textFullTag);
                 //  Found Tags + Mods
             //string[] textTag = TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment + separator + t.mod).ToArray();

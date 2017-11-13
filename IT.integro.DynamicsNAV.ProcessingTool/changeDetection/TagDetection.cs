@@ -23,13 +23,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         {
             tagPatterns = new Regex[3];
             tagPairPattern = new List<Regex[]>();
-            regMod = @"(?<mod>[A-Z0-9\/._-]+)";
+            regMod = @"(?<mod>[A-Z0-9][A-Z0-9\/.]{2,})";
             regModNoSlash = @"(?<mod>[A-Z0-9._-]+)";
             regModNAV = @"(?<mod>NAV[A-Z0-9\/._-]+)";
             regITPrefix = @"(IT\/)?";
             regEnd = @" *$";
             lineFrontComment = @"^\s*\/{2}\s*";
-            lineBackComment = @" *[^\s\/{2,}]+.*\/{2,} *";
+            lineBackComment = @"^ *[^\s\/{2,}]+.*\/{2,} *";
 
             DefinePatterns();
         }
@@ -261,17 +261,17 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
             foreach (var tag in TagRepo.fullTagList.Where(t => t.mod != null).ToList())
             {
-                if (tagPatterns[(int)Marks.BEGIN].IsMatch(tag.comment))
+                if (tagPatterns[(int)Marks.BEGIN].IsMatch(tag.line))
                 {
-                    match = tagPatterns[(int)Marks.BEGIN].Match(tag.comment);
+                    match = tagPatterns[(int)Marks.BEGIN].Match(tag.line);
                 }
-                else if (tagPatterns[(int)Marks.END].IsMatch(tag.comment))
+                else if (tagPatterns[(int)Marks.END].IsMatch(tag.line))
                 {
-                    match = tagPatterns[(int)Marks.END].Match(tag.comment);
+                    match = tagPatterns[(int)Marks.END].Match(tag.line);
                 }
-                else if (tagPatterns[(int)Marks.OTHER].IsMatch(tag.comment))
+                else if (tagPatterns[(int)Marks.OTHER].IsMatch(tag.line))
                 {
-                    match = tagPatterns[(int)Marks.OTHER].Match(tag.comment);
+                    match = tagPatterns[(int)Marks.OTHER].Match(tag.line);
                 }
                 TagRepo.Tags newTag = tag;
                 newTag.mod = match.Groups["mod"].Value;
@@ -389,7 +389,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 if (TagRepo.fullTagList[tagNumber].inLine == lineNumber)
                 {
                     TagRepo.Tags tag = TagRepo.fullTagList[tagNumber];
-                    tag.comment = line.TrimStart(' ');
+                    tag.line = line.TrimStart(' ');
                     if (CheckIfTagInLine(line))
                     {
                         if (!ContainsRestrictedWords(GetTagedModification(line)))
@@ -411,7 +411,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return string.Join(",", mods.ToArray());
         }
 
-        static char[] separator = new char[] { ' ' };
         static public void FindTagsToRepo(string[] codeLines)
         {
             if (TagRepo.tagObject == string.Empty)
@@ -438,7 +437,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 if (line.Contains(@"//"))
                 {
                     TagRepo.Tags tag = new TagRepo.Tags();
-                    tag.comment = line.TrimStart(' ');
+                    tag.line = line.TrimStart(' ');
                     tag.inLine = TagRepo.lineNo;
                     tag.inObject = TagRepo.tagObject;
 
@@ -450,6 +449,24 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                         }
                     }
                     TagRepo.fullTagList.Add(tag);
+                }
+                else if (line.Contains("Description="))
+                {
+                    List<string> descMods = TagDetection.GetLineDescriptionTagList(line);
+                    TagRepo.Tags tag = new TagRepo.Tags();
+                    tag.line = line.TrimStart(' ');
+                    tag.inLine = TagRepo.lineNo;
+                    tag.inObject = TagRepo.tagObject;
+                    if (descMods.Count() == 0)
+                    {
+                        TagRepo.fullTagList.Add(tag);
+                    }
+                    else
+                        foreach (string item in descMods)
+                        {
+                            tag.mod = item;
+                            TagRepo.fullTagList.Add(tag);
+                        }
                 }
                 else if (line.StartsWith("OBJECT "))
                 {
@@ -493,7 +510,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 {
                     if (codeLines[i].Contains("Description="))
                     {
-                        tagList.AddRange(GetDescriptionTagList(codeLines[i]));
+                        tagList.AddRange(GetLineDescriptionTagList(codeLines[i]));
                     }
                 }
                 i++;
@@ -510,18 +527,22 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return tagList;
         }
 
-        static public List<string> GetDescriptionTagList(string codeLine)
+        static char[] separator = new char[] { ' ' };
+        static public List<string> GetLineDescriptionTagList(string codeLine)
         {
             string fieldDescription = FlagDetection.GetDescription(codeLine);
-            fieldDescription = fieldDescription.Replace("IT/", "");
-            if(fieldDescription == fieldDescription.ToUpper())
+            List<string> descriptionMods = new List<string>();
+            // if(fieldDescription == fieldDescription.ToUpper())
+            foreach (string item in fieldDescription.Split(',').ToList())
             {
-                return fieldDescription.Split(',').ToList();
+                string first = item.Trim(' ').Split(separator)[0];
+                if (new Regex("^" + regMod + "$").IsMatch(first))
+                {
+                    descriptionMods.Add(first);
+                }
             }
-            else
-            {
-                return new List<string>();
-            }
+
+            return descriptionMods;
         }
     }
 }

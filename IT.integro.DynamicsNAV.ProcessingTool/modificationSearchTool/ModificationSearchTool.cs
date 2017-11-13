@@ -160,7 +160,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                             }
                             else if (obj.Type == "Table")
                             {
-                                if (line.Contains("Description=") && TagDetection.GetDescriptionTagList(line).Contains(modtag) && !(line.Contains("Version List=")))
+                                if (line.Contains("Description=") && TagDetection.GetLineDescriptionTagList(line).Contains(modtag) && !(line.Contains("Version List=")))
                                 {
                                     change = new ChangeClass(modtag, fieldContent, "Field", fieldName, obj.Type + " " + obj.Number + " " + obj.Name);
                                     ChangeClassRepository.AppendChange(change);

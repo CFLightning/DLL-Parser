@@ -10,8 +10,8 @@ namespace ConsoleApp1
         {
             //string inPath = @"C:\Users\Administrator\Documents\FARUTEX\LIVE_ALL_17_10_2017.txt";
             //string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
-            //string inPath = @"C:\FILES\Farutex_Report12.txt";
-            string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Objects\Table 5 FinanceChargeTerms.txt";
+            string inPath = @"c:\files\burda.txt";
+            //string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Objects\Table 5 FinanceChargeTerms.txt";
 
                 //      PassAllModifications
                 //string allMods = ProcessFile.PassAllModificationTags(inPath, true);
@@ -21,9 +21,9 @@ namespace ConsoleApp1
             Console.WriteLine(Environment.NewLine);
 
             //      Merge
-            string mergeString = "IT /IL/01|>|IL01";
-            string outPath = @"C:\FILES\out2.txt";
-            ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
+            //string mergeString = "IT /IL/01|>|IL01";
+            //string outPath = @"C:\FILES\burda.txt";
+            //ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
 
             //inPath = outPath;
             //allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);

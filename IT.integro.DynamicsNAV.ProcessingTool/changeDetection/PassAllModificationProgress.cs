@@ -58,7 +58,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                     i = 0;
                     bytes = 0;
                     Array.Clear(codeLine, 0, codeLine.Count());
-                    //ProcessFile.WatchStep();
                 }
             }
             string[] lastCodeLine = codeLine.Where(cl => cl != null).ToArray();
