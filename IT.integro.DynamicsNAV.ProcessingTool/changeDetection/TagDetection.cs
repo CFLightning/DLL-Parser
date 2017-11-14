@@ -106,19 +106,17 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             beginPatternParts.Add(@"<-+ *" + regMod + regEnd);
             beginPatternParts.Add(regMod + @" *(?i)((begin)|(start))" + regEnd);
             beginPatternParts.Add(regMod + @" *(?i)(\/S|\/B)" + regEnd);
-//            beginPatternParts.Add(@"START\/" + regModNAV + regEnd);
             beginPatternParts.Add(@"START\/" + regMod + regEnd);
 
             List<string> endPatternParts = new List<string>();
-            endPatternParts.Add(@"-+> *" + regITPrefix + regMod + regEnd);
+            endPatternParts.Add(@"-+> *" + regMod + regEnd);
             endPatternParts.Add(regMod + @" *(?i)((end)|(stop))" + regEnd);
             endPatternParts.Add(regMod + @" *(?i)/E" + regEnd);
-//            endPatternParts.Add(@"STOP ?\/" + regModNAV + regEnd);
             endPatternParts.Add(@"STOP ?\/" + regMod + regEnd);
 
             List<string> otherPatternParts = new List<string>();
-            otherPatternParts.Add(regITPrefix + regMod + @" *(?i)/S/E" + regEnd);
-            otherPatternParts.Add(regITPrefix + regMod + @" *" + regEnd);
+            otherPatternParts.Add(regMod + @" *(?i)/S/E" + regEnd);
+            otherPatternParts.Add(regMod + @" *" + regEnd);
             
             Regex rgxBegin, rgxEnd, rgxOther;
             Regex[] rgxPair;
