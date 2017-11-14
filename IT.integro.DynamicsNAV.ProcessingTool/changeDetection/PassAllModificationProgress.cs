@@ -61,8 +61,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                 }
             }
             string[] lastCodeLine = codeLine.Where(cl => cl != null).ToArray();
-            TagDetection.FindTagsToRepo(lastCodeLine);
-            backgroundWorker.ReportProgress(bytes);
+            if (lastCodeLine.Count() != 0)
+            {
+                TagDetection.FindTagsToRepo(lastCodeLine);
+                backgroundWorker.ReportProgress(bytes);
+            }
             inputfile.Close();
 
             mods = TagRepository.GetAllModList().Distinct().ToList();

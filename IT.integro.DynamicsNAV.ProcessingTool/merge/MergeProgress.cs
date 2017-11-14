@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using IT.integro.DynamicsNAV.ProcessingTool.repositories;
+using IT.integro.DynamicsNAV.ProcessingTool.changeDetection;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.merge
 {
@@ -94,10 +95,37 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
             {
                 if (tagNumber < tempMergeTagList.Count() && tempMergeTagList[tagNumber].inLine == lineNumber)
                 {
-                    Merge merge = mergePairList.Find(mp => mp.fromMod == tempMergeTagList[tagNumber].mod);
-                    line = line.Replace(merge.fromMod, merge.toMod);
-                    tagNumber++;
-                    backgroundWorker.ReportProgress(tagNumber);
+                    if (tempMergeTagList[tagNumber].isCodeOrField == true)  //  CODE
+                    {
+                        Merge merge = mergePairList.Find(mp => mp.fromMod == tempMergeTagList[tagNumber].mod);
+                        line = line.Replace(merge.fromMod, merge.toMod);
+                        tagNumber++;
+                        backgroundWorker.ReportProgress(tagNumber);
+                    }
+                    else    // FIELD DESCRIPTION
+                    {
+                        do
+                        {
+                            List<string> descMods = TagDetection.GetLineDescriptionTagList(line);
+                            Merge merge = mergePairList.Find(mp => mp.fromMod == tempMergeTagList[tagNumber].mod);
+                            string newDescription = string.Empty;
+                            for (int i = 0; i < descMods.Count; i++)
+                            {
+                                if (descMods[i] == tempMergeTagList[tagNumber].mod)
+                                {
+                                    newDescription += descMods[i].Replace(merge.fromMod, merge.toMod) + ", ";
+                                }
+                                else
+                                {
+                                    newDescription += descMods[i] + ", ";
+                                }
+                            }
+                            newDescription = newDescription.Substring(0, newDescription.Length - 2);
+                            line = line.Replace(FlagDetection.GetDescription(line), newDescription);
+                            
+                        } while (tagNumber+1 < tempMergeTagList.Count() && tempMergeTagList[tagNumber].inLine == tempMergeTagList[++tagNumber].inLine);
+                        backgroundWorker.ReportProgress(tagNumber);
+                    }
                 }
                 writer.WriteLine(line);
                 lineNumber++;

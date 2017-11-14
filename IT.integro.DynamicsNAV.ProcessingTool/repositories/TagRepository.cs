@@ -16,6 +16,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
             public string mod;
             public string inObject;
             public int inLine;
+            /// <summary>
+            /// True equals code, False equals Field
+            /// </summary>
+            public bool isCodeOrField;
         }
 
         static public List<Tags> fullTagList = new List<Tags>();

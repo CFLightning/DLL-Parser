@@ -10,7 +10,7 @@ namespace ConsoleApp1
         {
             //string inPath = @"C:\Users\Administrator\Documents\FARUTEX\LIVE_ALL_17_10_2017.txt";
             //string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
-            string inPath = @"c:\files\burda.txt";
+            string inPath = @"c:\files\burdatest.txt";
             //string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Objects\Table 5 FinanceChargeTerms.txt";
 
                 //      PassAllModifications
@@ -19,16 +19,18 @@ namespace ConsoleApp1
             foreach (string mod in allMods.Split(','))
                 Console.WriteLine(mod);
             Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("###########################################################");
+            Console.WriteLine(Environment.NewLine);
 
             //      Merge
-            //string mergeString = "IT /IL/01|>|IL01";
-            //string outPath = @"C:\FILES\burda.txt";
-            //ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
+            string mergeString = "026|>|926|#|031|>|931|#|006|>|906|#|ITBDP03|>|ABC|#|ITRKG100|>|ABC2|#|NAV2015PL/000|>|NAV2015";
+            string outPath = @"C:\FILES\burda2.txt";
+            ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
 
-            //inPath = outPath;
-            //allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);
-            //foreach (string mod in allMods.Split(','))
-            //    Console.WriteLine(mod);
+            inPath = outPath;
+            allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);
+            foreach (string mod in allMods.Split(','))
+                Console.WriteLine(mod);
 
             //      RunProcessing
             //Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"", true, allMods));

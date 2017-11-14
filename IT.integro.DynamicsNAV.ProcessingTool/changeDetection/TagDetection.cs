@@ -440,6 +440,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                     tag.line = line.TrimStart(' ');
                     tag.inLine = TagRepo.lineNo;
                     tag.inObject = TagRepo.tagObject;
+                    tag.isCodeOrField = true;
 
                     if (CheckIfTagInLine(line))
                     {
@@ -457,16 +458,20 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                     tag.line = line.TrimStart(' ');
                     tag.inLine = TagRepo.lineNo;
                     tag.inObject = TagRepo.tagObject;
+                    tag.isCodeOrField = false;
+
                     if (descMods.Count() == 0)
                     {
                         TagRepo.fullTagList.Add(tag);
                     }
                     else
+                    {
                         foreach (string item in descMods)
                         {
                             tag.mod = item;
                             TagRepo.fullTagList.Add(tag);
                         }
+                    }
                 }
                 else if (line.StartsWith("OBJECT "))
                 {
