@@ -173,13 +173,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 string[] allText = TagRepository.GetModObjectList(mod).ToArray();
                 objectsToSearch = objectsToSearch.Union(allText).ToList();
             }
-            char[] separator = new char[] { ' ' };
-            for (int i = 0; i < objectsToSearch.Count; i++)
-            {
-                objectsToSearch[i] = objectsToSearch[i].Split(separator, 4)[3].Replace(" ", string.Empty);
-            }
+            //char[] separator = new char[] { ' ' };
+            
+            //for (int i = 0; i < objectsToSearch.Count; i++)
+            //{
+            //    objectsToSearch[i] = objectsToSearch[i].Split(separator, 4)[1].Replace(" ", string.Empty);
+            //}
 
-            ObjectClassRepository.objectRepository = ObjectClassRepository.objectRepository.Where(o => objectsToSearch.Contains(o.Name)).ToList();
+            ObjectClassRepository.objectRepository = ObjectClassRepository.objectRepository.Where(o => objectsToSearch.Contains(o.Header)).ToList();
             return objectsToSearch;
         }
         

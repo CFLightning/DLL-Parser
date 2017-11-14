@@ -51,7 +51,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
                                 name = string.Concat(name, parameters[i]);
                             }
                             name = name.Replace("/", "");
-                            newObject = new ObjectClass(Int32.Parse(parameters[2]), parameters[1], name, "");
+                            newObject = new ObjectClass(line, Int32.Parse(parameters[2]), parameters[1], name, "");
                         }
                         sWriter.WriteLine(line);
                     }

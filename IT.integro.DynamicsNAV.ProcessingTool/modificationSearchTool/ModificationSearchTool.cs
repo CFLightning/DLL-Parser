@@ -30,13 +30,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
                 InitTags(obj);
-                //foreach(string expectedModification in expectedModifications)
-                //{
-                //    if (!(tags.Contains(expectedModification)))
-                //    {
-                //        return false;
-                //    }
-                //}
 
                 for(int i = 0; i < expectedModifications.Count; i++)
                 {
@@ -174,7 +167,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                                     if (line.Contains(modtag) && line.Contains("Description="))
                                     {
                                         description = FlagDetection.GetDescription(line);
-                                        change = new ChangeClass(modtag, "", "Action", "", "");
+                                        change = new ChangeClass(modtag, "", "Action", "", obj.Header);
                                         ChangeClassRepository.AppendChange(change);
                                         obj.Changelog.Add(change);
                                     }

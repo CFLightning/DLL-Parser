@@ -4,6 +4,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.parserClass
 {
     class ObjectClass
     {
+        private string header;
         private int number;
         private string type;
         private string name;
@@ -12,6 +13,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.parserClass
 
         public ObjectClass()
         {
+            header = "";
             number = 0;
             type = "";
             name = "";
@@ -19,8 +21,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.parserClass
             changelog = new List<ChangeClass>();
         }
 
-        public ObjectClass(int number, string type, string name, string contents)
+        public ObjectClass(string header, int number, string type, string name, string contents)
         {
+            this.header = header;
             this.number = number;
             this.type = type;
             this.name = name;
@@ -28,6 +31,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.parserClass
             changelog = new List<ChangeClass>();
         }
 
+        public string Header { get => header; set => header = value; }
         public int Number { get => number; set => number = value; }
         public string Type { get => type; set => type = value; }
         public string Name { get => name; set => name = value; }
