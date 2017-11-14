@@ -23,14 +23,14 @@ namespace ConsoleApp1
             Console.WriteLine(Environment.NewLine);
 
             //      Merge
-            string mergeString = "026|>|926|#|031|>|931|#|006|>|906|#|ITBDP03|>|ABC|#|ITRKG100|>|ABC2|#|NAV2015PL/000|>|NAV2015";
-            string outPath = @"C:\FILES\burda2.txt";
-            ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
+            //string mergeString = "ITBDP|>|ABC";
+            //string outPath = @"C:\FILES\burda2.txt";
+            //ProcessFile.RunMergeProcess(mergeString, inPath, outPath);
 
-            inPath = outPath;
-            allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);
-            foreach (string mod in allMods.Split(','))
-                Console.WriteLine(mod);
+            //inPath = outPath;
+            //allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);
+            //foreach (string mod in allMods.Split(','))
+            //    Console.WriteLine(mod);
 
             //      RunProcessing
             //Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"", true, allMods));

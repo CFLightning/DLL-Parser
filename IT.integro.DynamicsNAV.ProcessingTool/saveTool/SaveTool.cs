@@ -42,19 +42,23 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 DirectoryInfo directoryDetail = Directory.CreateDirectory(detailPath + CleanFileName(mod));
                 SetFullPermission(ref directoryDetail);
             }
-            
+
+            string separatorLine = "----------------------------------------------------------------------------------------------------";
             foreach (ChangeClass modChange in changes)
             {
-                if (modChange.ChangeType == "Code")
+                string fileName = modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt";
+                string detailFileName = detailPath + CleanFileName(modChange.ChangelogCode) + "//" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt";
+
+                if (modChange.ChangeType == "Code" || modChange.ChangeType == "Field")
                 {
-                    File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", "Source object: " + modChange.SourceObject + Environment.NewLine);
-                    File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
-                    File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", modChange.Contents);
-                    File.AppendAllText(modPath + @"\Modification " + CleanFileName(modChange.ChangelogCode) + " list.txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
+                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine);
+                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
+                    File.AppendAllText(fileName, modChange.Contents);
+                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine);
 
                         // Details
-                    File.AppendAllText(detailPath + CleanFileName(modChange.ChangelogCode) + "//" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", modChange.Contents);
-                    File.AppendAllText(detailPath + CleanFileName(modChange.ChangelogCode) + "//" + CleanFileName(modChange.SourceObject) + "#" + CleanFileName(modChange.Location) + @".txt", Environment.NewLine + "----------------------------------------------------------------------------------------------------" + Environment.NewLine);
+                    File.AppendAllText(detailFileName, modChange.Contents);
+                    File.AppendAllText(detailFileName, Environment.NewLine + separatorLine + Environment.NewLine);
                 }
             }
             return true;

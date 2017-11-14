@@ -96,9 +96,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
                 if (tagNumber < tempMergeTagList.Count() && tempMergeTagList[tagNumber].inLine == lineNumber)
                 {
                     if (tempMergeTagList[tagNumber].isCodeOrField == true)  //  CODE
-                    {
+                    {                                                 
                         Merge merge = mergePairList.Find(mp => mp.fromMod == tempMergeTagList[tagNumber].mod);
-                        line = line.Replace(merge.fromMod, merge.toMod);
+                        line = line.Replace(merge.fromMod, merge.toMod);      // Replace May be problem if tag and part of code in line is the same
                         tagNumber++;
                         backgroundWorker.ReportProgress(tagNumber);
                     }

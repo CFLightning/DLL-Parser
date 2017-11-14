@@ -155,6 +155,15 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                             {
                                 if (line.Contains("Description=") && TagDetection.GetLineDescriptionTagList(line).Contains(modtag) && !(line.Contains("Version List=")))
                                 {
+                                    int fieldNo = System.Int32.Parse(fieldContent);
+                                    if (fieldNo < 50000 || fieldNo > 99999)
+                                    {
+                                        fieldContent = "Change in standard field: " + fieldNo + " " + fieldName;
+                                    }
+                                    else
+                                    {
+                                        fieldContent = "New field: " + fieldNo + " " + fieldName;
+                                    }
                                     change = new ChangeClass(modtag, fieldContent, "Field", fieldName, obj.Type + " " + obj.Number + " " + obj.Name);
                                     ChangeClassRepository.AppendChange(change);
                                     obj.Changelog.Add(change);
