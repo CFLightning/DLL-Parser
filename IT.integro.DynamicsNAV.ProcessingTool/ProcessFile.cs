@@ -233,7 +233,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
         public static bool CheckIfTagIsCorrect(string tag)
         {
-            return TagDetection.tagNamePattern.IsMatch(tag);
+            return TagDetection.tagNamePattern.IsMatch(tag) && !TagDetection.ContainsRestrictedWords(tag);
         }
 
         public static string GetRegexTagDefinition()

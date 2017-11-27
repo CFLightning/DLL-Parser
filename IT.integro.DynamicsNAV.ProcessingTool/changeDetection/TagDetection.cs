@@ -25,8 +25,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             tagPatterns = new Regex[3];
             tagPairPattern = new List<Regex[]>();
             regMod = @"(?<mod>[A-Z0-9][A-Z0-9\/.]{2,})";
-            //regModNoSlash = @"(?<mod>[A-Z0-9._-]+)";
-            //regModNAV = @"(?<mod>NAV[A-Z0-9\/._-]+)";
+            regModNoSlash = @"(?<mod>[A-Z0-9._-]+)";
+            regModNAV = @"(?<mod>NAV[A-Z0-9\/._-]+)";
             regITPrefix = @"(IT\/)?";
             regEnd = @" *$";
             lineFrontComment = @"^\s*\/{2}\s*";
