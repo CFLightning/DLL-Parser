@@ -230,5 +230,15 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             if (comment != "")
                 Console.WriteLine(comment + ":");
         }
+
+        public static bool CheckIfTagIsCorrect(string tag)
+        {
+            return TagDetection.tagNamePattern.IsMatch(tag);
+        }
+
+        public static string GetRegexTagDefinition()
+        {
+            return TagDetection.tagNamePattern.ToString();
+        }
     }
 }
