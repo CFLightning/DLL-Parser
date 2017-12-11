@@ -1,7 +1,9 @@
 ﻿using IT.integro.DynamicsNAV.ProcessingTool.parserClass;
 using IT.integro.DynamicsNAV.ProcessingTool.repositories;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
@@ -63,6 +65,26 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
                     sWriter.Close();
             }
             return true;
+        }
+
+        public static List<string> ReduceObjects(List<string> expectedModifications)
+        {
+            List<string> objectsToSearch = new List<string>();
+
+            foreach (var mod in expectedModifications)
+            {
+                string[] allText = TagRepository.GetModObjectList(mod).ToArray();
+                objectsToSearch = objectsToSearch.Union(allText).ToList();
+            }
+            //char[] separator = new char[] { ' ' };
+
+            //for (int i = 0; i < objectsToSearch.Count; i++)
+            //{
+            //    objectsToSearch[i] = objectsToSearch[i].Split(separator, 4)[1].Replace(" ", string.Empty);
+            //}
+
+            ObjectClassRepository.objectRepository = ObjectClassRepository.objectRepository.Where(o => objectsToSearch.Contains(o.Header)).ToList();
+            return objectsToSearch;
         }
     }
 }

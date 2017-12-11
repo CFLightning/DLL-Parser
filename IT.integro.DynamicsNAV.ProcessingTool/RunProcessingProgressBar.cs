@@ -21,8 +21,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 "Saving changes to files",
                 "Saving documentation file",
                 "Saving objects of modification",
-                "Clearing repository"
-            };
+                "Clearing repository" };
         bool[] processesMap;
         bool[] processesReturns;
         List<string> expModifications;
@@ -78,7 +77,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                ProcessFile.ReduceObjects(expModifications);
+                FileSplitter.ReduceObjects(expModifications);
                 processesReturns[processNo] = ModificationSearchTool.FindAndSaveChanges(expModifications);
             }
 

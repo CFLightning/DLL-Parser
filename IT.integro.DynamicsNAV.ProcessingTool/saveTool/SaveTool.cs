@@ -66,8 +66,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
         private static string CleanFileName(string fileName)
         {
-            string filepath = string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
-            return filepath;
+            return string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
         }
 
         public static bool SaveObjectModificationFiles(string path, List<string> modifications)
