@@ -24,6 +24,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 "Clearing repository"
             };
         bool[] processesMap;
+        bool[] processesReturns;
         List<string> expModifications;
         string inputFilePath;
         string mappingFilePath;
@@ -40,6 +41,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             this.docModifications = docModifications;
             this.outputPath = outputPath;
             this.processesMap = processesMap;
+
+            this.processesReturns = new bool[processesMap.Length-1];
         }
 
         int minutes;
@@ -63,56 +66,56 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
             if (processesMap[processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                FileSplitter.SplitFile(inputFilePath);
+                processesReturns[processNo] = FileSplitter.SplitFile(inputFilePath);
             }
 
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                IndentationChecker.CheckIndentations();
+                processesReturns[processNo] = IndentationChecker.CheckIndentations();
             }
 
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
                 ProcessFile.ReduceObjects(expModifications);
-                ModificationSearchTool.FindAndSaveChanges(expModifications);
+                processesReturns[processNo] = ModificationSearchTool.FindAndSaveChanges(expModifications);
             }
 
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                ModificationCleanerTool.CleanChangeCode();
+                processesReturns[processNo] = ModificationCleanerTool.CleanChangeCode();
             }
 
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                DocumentationTrigger.UpdateDocumentationTrigger(docModifications);
+                processesReturns[processNo] = DocumentationTrigger.UpdateDocumentationTrigger(docModifications);
             }
 
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                SaveTool.SaveObjectsToFiles(outputPath);
+                processesReturns[processNo] = SaveTool.SaveObjectsToFiles(outputPath);
             }
 
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                SaveTool.SaveChangesToFiles(outputPath, expModifications);
+                processesReturns[processNo] = SaveTool.SaveChangesToFiles(outputPath, expModifications);
             }
 
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
+                processesReturns[processNo] = SaveTool.SaveDocumentationToFile(outputPath, DocumentationExport.GenerateDocumentationFile(outputPath, mappingFilePath, expModifications), expModifications, mappingFilePath);
             }
 
             if (processesMap[++processNo])
             {
                 backgroundWorker1.ReportProgress(processNo);
-                SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
+                processesReturns[processNo] = SaveTool.SaveObjectModificationFiles(outputPath, expModifications);
             }
             
             if (processesMap[++processNo])
@@ -132,6 +135,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            for (int i = 0; i < processesReturns.Length; i++)
+            {
+                if (processesReturns[i] != processesMap[i])
+                {
+                DialogResult = DialogResult.Abort;
+                throw new System.ArgumentException("Background Worker Error", processes[i]);
+                }
+            }
             DialogResult = DialogResult.OK;
             this.Close();
         }

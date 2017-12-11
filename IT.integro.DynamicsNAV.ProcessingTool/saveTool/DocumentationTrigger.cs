@@ -148,7 +148,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
                                     if (change.ChangeType == "Field")
                                     {
-                                        int fieldNum = Int32.Parse(change.Contents);
+                                        int fieldNum = Int32.Parse(change.SourceObject.Split(' ').ToArray().ElementAt(1));
                                         if (fieldNum <= 50000 || fieldNum >= 99999) 
                                         {
                                             locationList.Add(change.Location);

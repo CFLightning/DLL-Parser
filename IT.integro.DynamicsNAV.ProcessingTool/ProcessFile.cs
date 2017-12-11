@@ -240,5 +240,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
         {
             return TagDetection.tagNamePattern.ToString();
         }
+
+        public static string GetTemporaryPath()
+        {
+            return Path.GetTempPath() + @"NAVCommentTool\";
+        }
     }
 }

@@ -10,17 +10,18 @@ namespace ConsoleApp1
         {
             //string inPath = @"C:\Users\Administrator\Documents\FARUTEX\LIVE_ALL_17_10_2017.txt";
             //string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
-            string inPath = @"c:\files\burdatest.txt";
+            string inPath = @"c:\files\FX_TEST.txt";
             //string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Objects\Table 5 FinanceChargeTerms.txt";
 
                 //      PassAllModifications
                 //string allMods = ProcessFile.PassAllModificationTags(inPath, true);
             string allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);
-            foreach (string mod in allMods.Split(','))
-                Console.WriteLine(mod);
-            Console.WriteLine(Environment.NewLine);
-            Console.WriteLine("###########################################################");
-            Console.WriteLine(Environment.NewLine);
+
+            //foreach (string mod in allMods.Split(','))
+            //    Console.WriteLine(mod);
+            //Console.WriteLine(Environment.NewLine);
+            //Console.WriteLine("###########################################################");
+            //Console.WriteLine(Environment.NewLine);
 
             //      Merge
             //string mergeString = "ITBDP|>|ABC";
@@ -33,10 +34,10 @@ namespace ConsoleApp1
             //    Console.WriteLine(mod);
 
             //      RunProcessing
-            //Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"", true, allMods));
+            Console.WriteLine(ProcessFile.RunProcessing("001", inPath, @"", true, "001"));
 
             //      RunPreview
-            Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
+            //Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
 
 
             Console.WriteLine(Environment.NewLine + "Finish.");
