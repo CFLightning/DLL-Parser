@@ -60,6 +60,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                     File.AppendAllText(detailFileName, modChange.Contents);
                     File.AppendAllText(detailFileName, Environment.NewLine + separatorLine + Environment.NewLine);
                 }
+                else if(modChange.ChangeType == "Column")
+                {
+                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine);
+                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
+                    File.AppendAllText(fileName, "New " + modChange.ChangeType + " : " + modChange.Contents);
+                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine);
+                }
             }
             return true;
         }

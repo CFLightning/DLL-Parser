@@ -51,8 +51,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                     bool startFlag = false;
                     int nesting = 0;
                     string trigger = "";
-                    bool fieldFlag = false, actionFlag = false, controlFlag = false, openControlFlag = false, rdlFlag = false;
-                    string fieldName = "", sourceExpr = "", description = "", fieldContent = "";
+                    bool fieldFlag = false, actionFlag = false, controlFlag = false, openControlFlag = false, rdlFlag = false, columnFlag = false, colBuildFlag = false;
+                    string fieldName = "", sourceExpr = "", columnSourceExpr = "", description = "", fieldContent = "", columnName = "", columnContent = "";
 
                     while (null != (line = reader.ReadLine()))
                     {
@@ -100,6 +100,17 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                             {
                                 if (rdlFlag = !FlagDetection.DetectIfTableRDLEnd(line))
                                     continue;
+                            }
+
+                            if (columnFlag == false && FlagDetection.DetectIfDatasetStartFlag(line))
+                                columnFlag = true;
+                            else if (columnFlag == true && FlagDetection.DetectIfDatasetEndFlag(line))
+                                columnFlag = false;
+                            else if (columnFlag == true && FlagDetection.DetectIfNextFieldFlag(line))
+                            {
+                                columnName = FlagDetection.GetNextColumnName(line);
+                                columnSourceExpr = FlagDetection.GetNextColumnExpr(line);
+                                columnContent = FlagDetection.GetNextFieldNumber(line);
                             }
                         }
 
@@ -167,6 +178,24 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                                     change = new ChangeClass(modtag, fieldContent, "Field", fieldName, obj.Type + " " + obj.Number + " " + obj.Name);
                                     ChangeClassRepository.AppendChange(change);
                                     obj.Changelog.Add(change);
+                                }
+                            }
+                            else if (obj.Type == "Report")
+                            {
+                                if (line.Contains("Description=") && TagDetection.GetLineDescriptionTagList(line).Contains(modtag) && !(line.Contains("Version List=")))
+                                {
+                                    int columnNo = System.Int32.Parse(columnContent);
+                                    change = new ChangeClass(modtag, "", "Column", columnName, obj.Header);
+                                    colBuildFlag = true;
+                                }
+                                else if (columnFlag && line.Contains("SourceExpr=") && colBuildFlag)
+                                {
+                                    change.Contents += line.Trim(' ');
+                                    change.Contents = change.Contents.Trim('}');
+                                    change.Contents = change.Contents.Trim(' ');
+                                    ChangeClassRepository.AppendChange(change);
+                                    obj.Changelog.Add(change);
+                                    colBuildFlag = false;
                                 }
                             }
                             else if (obj.Type == "Page")

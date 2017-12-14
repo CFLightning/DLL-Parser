@@ -10,7 +10,7 @@ namespace ConsoleApp1
         {
             //string inPath = @"C:\Users\Administrator\Documents\FARUTEX\LIVE_ALL_17_10_2017.txt";
             //string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
-            string inPath = @"c:\files\FX_TEST.txt";
+            string inPath = @"C:\Users\Administrator\Documents\ObjAllTeutonia_All.txt";
             //string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Objects\Table 5 FinanceChargeTerms.txt";
 
                 //      PassAllModifications
@@ -34,10 +34,10 @@ namespace ConsoleApp1
             //    Console.WriteLine(mod);
 
             //      RunProcessing
-            Console.WriteLine(ProcessFile.RunProcessing("001", inPath, @"", true, "001"));
+            //Console.WriteLine(ProcessFile.RunProcessing("001", inPath, @"", true, "001"));
 
             //      RunPreview
-            //Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
+            Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
 
 
             Console.WriteLine(Environment.NewLine + "Finish.");

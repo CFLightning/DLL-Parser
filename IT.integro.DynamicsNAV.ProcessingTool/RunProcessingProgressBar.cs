@@ -139,7 +139,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool
                 if (processesReturns[i] != processesMap[i])
                 {
                 DialogResult = DialogResult.Abort;
-                throw new System.ArgumentException("Background Worker Error", processes[i]);
+                //throw new System.ArgumentException("Background Worker Error", processes[i]);
                 }
             }
             DialogResult = DialogResult.OK;

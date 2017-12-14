@@ -5,10 +5,14 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
     class FlagDetection
     {
         static Regex rgxField;
+        static Regex rgxColumn;
 
         static FlagDetection()
         {
             rgxField = new Regex(@"^\s*{(?<FieldNumber>[^;]*);[^;]*;(?<FieldName>[^;]*)\s*;([^;]*;)?(.*=)?.*$");
+            //rgxColumn = new Regex(@"^\s*{(?<FieldNumber>[^;]*);[^;]*;(?<FieldName>[^;]*)\s*;(?<ColumnName>[^;]*)?\s*;\n(?<ExpName>[^;]*);\n(?<SourceName>[^;]*)}(.*=)?.*$");
+            rgxColumn = new Regex(@"^\s*{(?<FieldNumber>[^;]*);[^;]*;(?<FieldName>[^;]*)\s*;(?<ColumnName>[^;]*)\s*([^;]*;)?(.*=)?.*$");
+
         }
 
         static public bool DetectIfNextFieldFlag(string codeLine)
@@ -20,6 +24,18 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         {
             Match match = rgxField.Match(codeLine);
             return match.Groups["FieldName"].Value.Trim(' ');
+        }
+
+        static public string GetNextColumnName(string codeLine)
+        {
+            Match match = rgxColumn.Match(codeLine);
+            return match.Groups["ColumnName"].Value.Trim(' ');
+        }
+
+        static public string GetNextColumnExpr(string codeLine)
+        {
+            Match match = rgxColumn.Match(codeLine);
+            return match.Groups["SourceExpr"].Value.Trim(' ');
         }
 
         static public string GetNextFieldNumber(string codeLine)
@@ -39,6 +55,22 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static public bool DetectIfFieldsEndFlag(string codeLine)
         {
             if (codeLine == "  KEYS")
+                return true;
+            else
+                return false;
+        }
+
+        static public bool DetectIfDatasetStartFlag(string codeLine)
+        {
+            if (codeLine == "  DATASET")
+                return true;
+            else
+                return false;
+        }
+
+        static public bool DetectIfDatasetEndFlag(string codeLine)
+        {
+            if (codeLine == "  REQUESTPAGE")
                 return true;
             else
                 return false;

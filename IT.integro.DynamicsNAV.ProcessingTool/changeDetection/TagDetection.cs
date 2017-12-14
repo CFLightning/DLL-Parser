@@ -493,7 +493,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
 
             int i = 0;
 
-            bool fieldFlag = false, actionFlag = false, controlFlag = false;
+            bool fieldFlag = false, actionFlag = false, controlFlag = false, datasetFlag = false;
             while (i < codeLines.Length - 1)
             {
                 if (!fieldFlag && FlagDetection.DetectIfFieldsStartFlag(codeLines[i]))
@@ -502,15 +502,19 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                     actionFlag = true;
                 else if (!controlFlag && FlagDetection.DetectIfControlStartFlag(codeLines[i]))
                     controlFlag = true;
+                else if (!datasetFlag && FlagDetection.DetectIfDatasetStartFlag(codeLines[i]))
+                    datasetFlag = true;
 
                 if (fieldFlag && FlagDetection.DetectIfFieldsEndFlag(codeLines[i]))
-                    fieldFlag = true;
+                    fieldFlag = false;
                 else if (actionFlag && FlagDetection.DetectIfActionEndFlag(codeLines[i]))
-                    actionFlag = true;
+                    actionFlag = false;
                 else if (controlFlag && FlagDetection.DetectIfControlEndFlag(codeLines[i]))
-                    controlFlag = true;
+                    controlFlag = false;
+                else if (datasetFlag && FlagDetection.DetectIfDatasetEndFlag(codeLines[i]))
+                    datasetFlag = false;
 
-                if (fieldFlag || actionFlag || controlFlag)
+                if (fieldFlag || actionFlag || controlFlag || datasetFlag)
                 {
                     if (codeLines[i].Contains("Description="))
                     {
