@@ -48,6 +48,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             int i = 0;
             int bytes = 0;
 
+
+            // SPLIT FILE TO CHUNKS
             while ((codeLine[i] = inputfile.ReadLine()) != null)
             {
                 bytes += System.Text.ASCIIEncoding.ASCII.GetByteCount(codeLine[i]);

@@ -431,13 +431,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         {
             if (TagRepo.tagObject == string.Empty)
                 TagRepo.tagObject = codeLines[0];
-            
+
             foreach (var line in codeLines)
             {
                 TagRepo.lineNo++;
 
-                //  Ommit RDLDATA section of Report
-                if (TagRepo.flagReport)
+                    //  Ommit RDLDATA section of Report
+                    if (TagRepo.flagReport)
                 {
                     if (!TagRepo.flagRDLDATA)
                     {
@@ -591,7 +591,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
         static public bool CheckIfTagInVersionList(string line, string tag)
         {
             string taglist = line.Substring(line.IndexOf("Version List=") + 13);
-            taglist = taglist.Trim(';');
+            taglist = taglist.TrimEnd(';');
             string[] tags = taglist.Split(',');
             if (tags.Contains(tag))
             {
@@ -601,6 +601,21 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             {
                 return false;
             }
+        }
+
+        static public string ReplaceTagInVersionList(string line, string tagOld, string tagNew)
+        {
+            string taglist = line.Substring(line.IndexOf("Version List=") + 13);
+            taglist = taglist.TrimEnd(';');
+            string[] tags = taglist.Split(',');
+            for (int i = 0; i < tags.Length; i++)
+            {
+                if (tags[i] == tagOld)
+                {
+                    tags[i] = tagNew;
+                }
+            }
+            return "    Version List=" + tags.Aggregate((a, b) => a + "," + b) + ";";
         }
     }
 }
