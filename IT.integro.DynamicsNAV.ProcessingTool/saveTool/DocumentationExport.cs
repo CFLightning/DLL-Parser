@@ -71,7 +71,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                             writing = false;
                         }
 
-                        if (line.StartsWith("    END") && beginFlag)
+                        if ((line.StartsWith("    END") && beginFlag))
                         {
                             beginFlag = false;
                         }

@@ -95,6 +95,15 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
             {
                 if (tagNumber < tempMergeTagList.Count() && tempMergeTagList[tagNumber].inLine == lineNumber)
                 {
+                    if(line.StartsWith("    Version List="))
+                    {
+                        if(TagDetection.CheckIfTagInVersionList(line, tempMergeTagList[tagNumber].mod))
+                        {
+                            Merge merge = mergePairList.Find(mp => mp.fromMod == tempMergeTagList[tagNumber].mod);
+                            line = line.Replace(merge.fromMod, merge.toMod);
+                        }
+                    }
+
                     if (tempMergeTagList[tagNumber].isCodeOrField == true)  //  CODE
                     {                                                 
                         Merge merge = mergePairList.Find(mp => mp.fromMod == tempMergeTagList[tagNumber].mod);

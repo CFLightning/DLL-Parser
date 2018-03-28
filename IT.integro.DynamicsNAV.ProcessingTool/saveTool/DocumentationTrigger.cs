@@ -16,7 +16,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             List<string> versionList = new List<string>();
             versionList = codeLine.Substring(codeLine.IndexOf('=') + 1).Split(',').ToList();
             versionList[versionList.Count - 1] = versionList.Last().Substring(0, versionList.Last().Length - 1);
-            versionList = versionList.Union(TagDetection.GetModyficationList(obj.Contents)).ToList();
+            versionList = versionList.Union(TagDetection.GetModyficationList(obj.Contents, obj.Number)).ToList();
 
             string versionString = string.Join(",", versionList.ToArray());
             if (versionString.Length >= 248)
@@ -38,7 +38,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             List<string> locationList = new List<string>();
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
-                List<string> ObjectModList = TagDetection.GetModyficationList(obj.Contents);
+                List<string> ObjectModList = TagDetection.GetModyficationList(obj.Contents, obj.Number);
                 StringReader reader = new StringReader(obj.Contents);
                 bracketFlag = false; beginFlag = false; writing = false; documentationPrompt = false; deleteFlag = false; addBrackets = false; bracketsExist = false;
 
@@ -159,6 +159,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                                             locationList.Add(change.Location);
                                             writer.WriteLine("      - New " + change.ChangeType + ": " + change.Location);
                                         }
+                                    }
+                                    else if(change.ChangeType == "NewObj")
+                                    {
+                                        locationList.Add(change.Location);
+                                        writer.WriteLine("      - New " + change.Contents + ": " + change.Location);
                                     }
                                     else
                                     {

@@ -6,6 +6,7 @@ using IT.integro.DynamicsNAV.ProcessingTool.repositories;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
 {
@@ -16,7 +17,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
 
         static void InitTags(ObjectClass obj)
         {
-            tags = TagDetection.GetModyficationList(obj.Contents);
+            tags = TagDetection.GetModyficationList(obj.Contents, obj.Number);
+
         }
 
         static void InitErrorChecklist(List<string> expectedModifications)
@@ -51,11 +53,19 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                     bool startFlag = false;
                     int nesting = 0;
                     string trigger = "";
-                    bool fieldFlag = false, actionFlag = false, controlFlag = false, openControlFlag = false, rdlFlag = false, columnFlag = false, colBuildFlag = false;
+                    bool fieldFlag = false, actionFlag = false, controlFlag = false, openControlFlag = false, rdlFlag = false, columnFlag = false, colBuildFlag = false, onlyVersionList = false;
                     string fieldName = "", sourceExpr = "", columnSourceExpr = "", description = "", fieldContent = "", columnName = "", columnContent = "";
 
-                    while (null != (line = reader.ReadLine()))
+                    while (null != (line = reader.ReadLine())) // VERSION LIST / tag 
                     {
+                        if(line.StartsWith("    Version List="))
+                        {
+                            //string firstVer = line.Substring(line.IndexOf("Version List=") + 13); 
+                            if(!line.StartsWith("    Version List=NAVW"))
+                                if(TagDetection.CheckIfTagInVersionList(line, modtag))
+                                    onlyVersionList = true;
+                        }
+
                         if (TriggerDetection.DetectIfAnyTriggerInLine(line))
                         {
                             trigger = TriggerDetection.GetTriggerName(line);
@@ -126,6 +136,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                                         change = new ChangeClass(currentFlag, builder.ToString(), "Code", (fieldFlag ? (fieldName + " - ") : "") + trigger, obj.Type + " " + obj.Number + " " + obj.Name);
                                         ChangeClassRepository.AppendChange(change);
                                         obj.Changelog.Add(change);
+                                        onlyVersionList = false;
                                     }
 
                                     writer.Close();
@@ -149,9 +160,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                             {
                                 if (TagDetection.CheckIfTagsIsAlone(line))
                                 {
+                                    line = line.Substring(0, line.LastIndexOf(@"//"));
                                     change = new ChangeClass(modtag, line, "Code", (fieldFlag ? (fieldName + " - ") : "") + trigger, obj.Type + " " + obj.Number + " " + obj.Name);
                                     ChangeClassRepository.AppendChange(change);
                                     obj.Changelog.Add(change);
+                                    onlyVersionList = false;
                                 }
                                 else if (TagDetection.GetTagedModification(line) == modtag && TagDetection.CheckIfBeginTagInLine(line))
                                 {
@@ -178,6 +191,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                                     change = new ChangeClass(modtag, fieldContent, "Field", fieldName, obj.Type + " " + obj.Number + " " + obj.Name);
                                     ChangeClassRepository.AppendChange(change);
                                     obj.Changelog.Add(change);
+                                    onlyVersionList = false;
                                 }
                             }
                             else if (obj.Type == "Report")
@@ -187,6 +201,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                                     int columnNo = System.Int32.Parse(columnContent);
                                     change = new ChangeClass(modtag, "", "Column", columnName, obj.Header);
                                     colBuildFlag = true;
+                                    onlyVersionList = false;
                                 }
                                 else if (columnFlag && line.Contains("SourceExpr=") && colBuildFlag)
                                 {
@@ -208,6 +223,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                                         change = new ChangeClass(modtag, "", "Action", "", obj.Header);
                                         ChangeClassRepository.AppendChange(change);
                                         obj.Changelog.Add(change);
+                                        onlyVersionList = false;
                                     }
                                 }
                                 else if (controlFlag)
@@ -224,10 +240,18 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
                                         ChangeClassRepository.AppendChange(change);
                                         obj.Changelog.Add(change);
                                         openControlFlag = false;
+                                        onlyVersionList = false;
                                     }
                                 }
                             }
                         }
+                    }
+
+                    if (onlyVersionList)
+                    {
+                        change = new ChangeClass(modtag, PrepareCodeunitHash(obj.Contents), "NewObj", "", obj.Header);
+                        ChangeClassRepository.AppendChange(change);
+                        obj.Changelog.Add(change);
                     }
                 }
             }
@@ -239,6 +263,23 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.modificationSearchTool
             {
                 return true;
             }
+        }
+
+        static public string PrepareCodeunitHash(string code)
+        {
+            //string[] codeLines = code.Replace("\r", "").Split('\n');
+            string noProperties = code.Remove(code.IndexOf("OBJECT-PROPERTIES"), code.IndexOf("  PROPERTIES") - code.IndexOf("OBJECT-PROPERTIES"));
+
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(code);
+            byte[] hash = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                sb.Append(hash[i].ToString("X2"));
+            }
+            return sb.ToString();
         }
     }
 }

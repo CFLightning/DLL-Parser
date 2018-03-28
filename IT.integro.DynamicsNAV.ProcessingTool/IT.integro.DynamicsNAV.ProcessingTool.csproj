@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="changeDetection\TagDetection.cs" />
     <Compile Include="changeDetection\TriggerDetection.cs" />
+    <Compile Include="PlainMapper.cs" />
     <Compile Include="RunProcessingProgressBar.cs">
       <SubType>Form</SubType>
     </Compile>

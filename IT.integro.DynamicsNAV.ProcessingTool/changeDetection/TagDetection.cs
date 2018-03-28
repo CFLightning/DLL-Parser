@@ -339,12 +339,29 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             return "";
         }
 
-        static public List<string> GetModyficationList(string code)
+        static public List<string> GetModyficationList(string code, int objectNo)
         {
             string[] codeLines = code.Replace("\r", "").Split('\n');
             List<string> tags = FindModsInTags(FindTags(codeLines));
             List<string> descs = GetFieldDescriptionTagList(code);
-            return tags.Union(descs).ToList();
+            List<string> vList = GetVersionListTags(code);
+            return tags.Union(descs).ToList().Union(vList).ToList();
+            
+        }
+
+        static public List<string> GetVersionListTags(string code)
+        {
+            string[] codeLines = code.Replace("\r", "").Split('\n');
+            foreach(string line in codeLines)
+            {
+                if(line.StartsWith("    Version List="))
+                {
+                    string taglist = line.Substring(line.IndexOf("Version List=") + 13);
+                    taglist = taglist.Trim(';');
+                    return taglist.Split(',').ToList();
+                }
+            }
+            return new List<string>();
         }
 
         static public string GetModificationString(string path)
@@ -477,6 +494,24 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
                     TagRepo.tagObject = line;
                     TagRepo.flagReport = TagRepo.CheckIfReport();
                 }
+                else if (line.StartsWith("    Version List="))
+                {
+                    string taglist = line.Substring(line.IndexOf("Version List=") + 13).TrimEnd(';');
+                    foreach(string verTag in taglist.Split(',').ToList())
+                    {
+                        if(verTag != "" && verTag != null)
+                        {
+                            TagRepo.Tags tag = new TagRepo.Tags();
+                            tag.mod = verTag;
+                            tag.line = line.TrimStart(' ');
+                            tag.inLine = TagRepo.lineNo;
+                            tag.inObject = TagRepo.tagObject;
+                            tag.isCodeOrField = false;
+                            TagRepo.fullTagList.Add(tag);
+                        }
+                    }
+                }
+
             }
         }
 
@@ -551,6 +586,21 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             }
 
             return descriptionMods;
+        }
+
+        static public bool CheckIfTagInVersionList(string line, string tag)
+        {
+            string taglist = line.Substring(line.IndexOf("Version List=") + 13);
+            taglist = taglist.Trim(';');
+            string[] tags = taglist.Split(',');
+            if (tags.Contains(tag))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

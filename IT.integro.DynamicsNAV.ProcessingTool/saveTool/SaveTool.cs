@@ -18,7 +18,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             DirectoryInfo directory = Directory.CreateDirectory(objPath);
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
-                File.WriteAllText(path + @"\Objects\" + obj.Type + " " + obj.Number + " " + obj.Name + ".txt", obj.Contents);
+                File.WriteAllText(path + @"\Objects\" + obj.Type + " " + obj.Number + " " + obj.Name + ".txt", obj.Contents, System.Text.Encoding.Default);
             }
             return true;
         }
@@ -33,12 +33,12 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 Directory.Delete(modPath, true);
             DirectoryInfo directory = Directory.CreateDirectory(modPath);
             SetFullPermission(ref directory);
-            
+
             foreach (var mod in modifications)
             {
                 File.Create(modPath + @"\Modification " + CleanFileName(mod) + " list.txt").Dispose();
 
-                    // Details
+                // Details
                 DirectoryInfo directoryDetail = Directory.CreateDirectory(detailPath + CleanFileName(mod));
                 SetFullPermission(ref directoryDetail);
             }
@@ -51,21 +51,28 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
                 if (modChange.ChangeType == "Code" || modChange.ChangeType == "Field")
                 {
-                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine);
-                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
-                    File.AppendAllText(fileName, modChange.Contents);
-                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine);
+                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, modChange.Contents, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, System.Text.Encoding.Default);
 
-                        // Details
-                    File.AppendAllText(detailFileName, modChange.Contents);
-                    File.AppendAllText(detailFileName, Environment.NewLine + separatorLine + Environment.NewLine);
+                    // Details
+                    File.AppendAllText(detailFileName, modChange.Contents, System.Text.Encoding.Default);
+                    File.AppendAllText(detailFileName, Environment.NewLine + separatorLine + Environment.NewLine, System.Text.Encoding.Default);
                 }
-                else if(modChange.ChangeType == "Column")
+                else if (modChange.ChangeType == "Column")
                 {
-                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine);
-                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine);
-                    File.AppendAllText(fileName, "New " + modChange.ChangeType + " : " + modChange.Contents);
-                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine);
+                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, "New " + modChange.ChangeType + " : " + modChange.Contents, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, System.Text.Encoding.Default);
+                }
+                else if (modChange.ChangeType == "NewObj")
+                {
+                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, modChange.Contents, System.Text.Encoding.Default);
+                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, System.Text.Encoding.Default);
                 }
             }
             return true;
@@ -96,9 +103,9 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
             {
                 foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
                 {
-                    if(obj.changelog.GroupBy(x => x.ChangelogCode).Select(grp => grp.First()).ToList().Contains(chg))
+                    if (obj.changelog.GroupBy(x => x.ChangelogCode).Select(grp => grp.First()).ToList().Contains(chg))
                     {
-                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + ".txt", obj.Contents);
+                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + ".txt", obj.Contents, System.Text.Encoding.Default);
                     }
                 }
             }
@@ -116,7 +123,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
             string docPath = path + "Documentation";
             DirectoryInfo directory = Directory.CreateDirectory(docPath);
-            File.WriteAllText(docPath + @"\Documentation.txt", documentation);
+            File.WriteAllText(docPath + @"\Documentation.txt", documentation, System.Text.Encoding.Default);
 
             docPath = docPath + @"\Modification Documentation";
             directory = Directory.CreateDirectory(docPath);
@@ -127,7 +134,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                     File.Delete(docPath + @"\" + CleanFileName(modification) + " documentation file.txt");
                 File.Create(docPath + @"\" + CleanFileName(modification) + " documentation file.txt").Dispose();
             }
-       
+
             foreach (string modification in expectedModifications)
             {
                 string line;
@@ -135,9 +142,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 StringReader reader = new StringReader(documentation);
                 while (null != (line = reader.ReadLine()))
                 {
-                    if (line.Contains("#" + modification + "#") || (mappingDictionary.ContainsKey(modification) && line.Contains("#" + mappingDictionary[modification] + "#")))
+                    if ((line.Contains("#" + modification + "#")) || (mappingDictionary.ContainsKey(modification) && line.Contains("#" + mappingDictionary[modification] + "#")))
                     {
-                        File.AppendAllText(docPath + @"\" + CleanFileName(modification) + " documentation file.txt", lineAmount + line.Substring(line.IndexOf("<next>")) + Environment.NewLine);
+                        if (mappingDictionary.ContainsKey(modification) && line.Contains("#" + mappingDictionary[modification] + "#"))
+                        {
+                            line = line.Replace("#" + mappingDictionary[modification] + "#", "#" + modification + "#");
+                        }
+                        File.AppendAllText(docPath + @"\" + CleanFileName(modification) + " documentation file.txt", lineAmount + line.Substring(line.IndexOf("<next>")) + Environment.NewLine, System.Text.Encoding.Default);
                         lineAmount++;
                     }
                 }

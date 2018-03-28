@@ -8,15 +8,17 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
+            string doc = @"1<next>8<next>FADepreciationBooksSubform<next>#ITAA6.0#<next>#ITAA6.0#%$%2<next>8<next>FADepreciationBooksSubform<next>#ITAA6.0#<next>- New Actions%$%3<next>8<next>FADepreciationBooks-I<next>#ITAA6.0#<next>#ITAA6.0#%$%4<next>8<next>FADepreciationBooks-I<next>#ITAA6.0#<next>- New Actions";
+
             //string inPath = @"C:\Users\Administrator\Documents\FARUTEX\LIVE_ALL_17_10_2017.txt";
             //string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
-            string inPath = @"C:\Users\Administrator\Documents\ObjAllTeutonia_All.txt";
+            string inPath = @"C:\Users\Administrator\Documents\KRP.01.001_KRP.01.002.txt";
             //string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Objects\Table 5 FinanceChargeTerms.txt";
 
                 //      PassAllModifications
                 //string allMods = ProcessFile.PassAllModificationTags(inPath, true);
             string allMods = ProcessFile.PassAllModificationTagsProcess(inPath, true);
-
+            Console.WriteLine(allMods);
             //foreach (string mod in allMods.Split(','))
             //    Console.WriteLine(mod);
             //Console.WriteLine(Environment.NewLine);
@@ -34,11 +36,11 @@ namespace ConsoleApp1
             //    Console.WriteLine(mod);
 
             //      RunProcessing
-            //Console.WriteLine(ProcessFile.RunProcessing("001", inPath, @"", true, "001"));
+            Console.WriteLine(ProcessFile.RunProcessing(allMods, inPath, @"C:\mapping.csv", true, allMods));
 
             //      RunPreview
-            Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
-
+            //Console.WriteLine(ProcessFile.RunPreview(allMods, inPath, false));
+            Console.Write(PlainMapper.MapDocumentationToFile(doc, @"C:\mapping.csv"));
 
             Console.WriteLine(Environment.NewLine + "Finish.");
             Console.ReadKey();
