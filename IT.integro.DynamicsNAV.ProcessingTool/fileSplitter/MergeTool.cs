@@ -88,12 +88,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
             
         }
 
-        static public void SaveFile(string outputFileName)
-        {
-            string outputFilePath = SetOutputPath(outputFileName);
-            System.IO.File.WriteAllLines(outputFilePath, fileLines);
-        }
-
         static public void MergeAndSave(string inputFileName, string outputFileName, string mergeString)
         {
             System.IO.StreamReader reader = new System.IO.StreamReader(inputFileName);

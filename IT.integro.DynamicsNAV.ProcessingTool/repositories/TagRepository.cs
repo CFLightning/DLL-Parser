@@ -64,20 +64,20 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
             string separator = "|#|";
                 //  Full Repository
             string[] textFullTag = fullTagList.Select(s => s.inLine + separator + s.inObject + separator + s.line + separator + s.mod).ToArray();
-            File.WriteAllLines(pathFullTagList, textFullTag);
-                //  Found Tags + Mods
+            File.WriteAllLines(pathFullTagList, textFullTag, EncodingManager.target);
+            //  Found Tags + Mods
             //string[] textTag = TagRepository.fullTagList.Where(r => r.mod != null).Select(t => t.comment + separator + t.mod).ToArray();
-            //File.WriteAllLines(pathTagList, textTag);
-                //  Abandoned Comments
+            //File.WriteAllLines(pathTagList, textTag, EncodingManager.target));
+            //  Abandoned Comments
             //string[] textAbandonedComments = TagRepository.fullTagList.Where(r => r.mod == null).Select(t => t.inObject + separator + t.comment).ToArray();
-            //File.WriteAllLines(pathAbandoned, textAbandonedComments);
-                //  Mod per Object
+            //File.WriteAllLines(pathAbandoned, textAbandonedComments, EncodingManager.target));
+            //  Mod per Object
             foreach (var obj in GetAllObjectList())
             {
                 string objFileName = string.Join("_", obj.Split(Path.GetInvalidFileNameChars()));
                 string objFilePath = pathModInObj + objFileName + ".txt";
                 string[] textObjectMod = GetObjectModList(obj).ToArray();
-                File.AppendAllLines(objFilePath, textObjectMod);
+                File.AppendAllLines(objFilePath, textObjectMod, EncodingManager.target);
             }
                 // Object per Mod
             foreach (var mod in GetAllModList()) 
@@ -85,7 +85,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.repositories
                 string modFileName = string.Join("_", mod.Split(Path.GetInvalidFileNameChars()));
                 string modFilePath = pathObjWithMod + modFileName + ".txt";
                 string[] textModObject = GetModObjectList(mod).ToArray();
-                File.AppendAllLines(modFilePath, textModObject);
+                File.AppendAllLines(modFilePath, textModObject, EncodingManager.target);
             }
         }
 
