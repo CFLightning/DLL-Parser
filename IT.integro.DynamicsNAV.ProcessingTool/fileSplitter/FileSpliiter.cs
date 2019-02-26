@@ -18,7 +18,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
             string name = "";
             try
             {
-                using (StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1")))
+                using (StreamReader inputfile = new StreamReader(path, EncodingManager.nav))
                 {
                     string line;
                     while ((line = inputfile.ReadLine()) != null)

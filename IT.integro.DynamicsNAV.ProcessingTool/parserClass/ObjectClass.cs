@@ -31,11 +31,11 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.parserClass
             changelog = new List<ChangeClass>();
         }
 
-        public string Header { get => header; set => header = value; }
-        public int Number { get => number; set => number = value; }
-        public string Type { get => type; set => type = value; }
-        public string Name { get => name; set => name = value; }
-        public string Contents { get => contents; set => contents = value; }
-        internal List<ChangeClass> Changelog { get => changelog; set => changelog = value; }
+        public string Header { get { return header; } set { header = value; } }
+        public int Number { get { return number; } set { number = value; } }
+        public string Type { get { return type; } set { type = value; } }
+        public string Name { get { return name; } set { name = value; } }
+        public string Contents { get { return contents; } set { contents = value; } }
+        internal List<ChangeClass> Changelog { get { return changelog; } set { changelog = value; } }
     }
 }

@@ -39,7 +39,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             TagRepository.ClearRepo(true);
             TagRepository.DeleteFiles();
 
-            StreamReader inputfile = new StreamReader(inputFilePath, Encoding.GetEncoding("ISO-8859-1"));
+            StreamReader inputfile = new StreamReader(inputFilePath, EncodingManager.nav);
             
             List<string> mods = new List<string>();
             List<string> tags = new List<string>();

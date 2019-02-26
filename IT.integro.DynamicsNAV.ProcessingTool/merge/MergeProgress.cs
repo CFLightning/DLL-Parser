@@ -84,9 +84,8 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            Encoding fileEncoding = GetFileEncoding(inputFilePath);
-            System.IO.StreamReader reader = new System.IO.StreamReader(inputFilePath, fileEncoding);
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(outputFilePath, false, fileEncoding);
+            System.IO.StreamReader reader = new System.IO.StreamReader(inputFilePath, EncodingManager.nav);
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(outputFilePath, false, EncodingManager.nav);
 
             string line;
             int lineNumber = 0;
@@ -212,36 +211,6 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.merge
                 minutes++;
             }
             textBox1.Text = minutes.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0');
-        }
-
-        /// <summary>
-        /// Detects the byte order mark of a file and returns
-        /// an appropriate encoding for the file.
-        /// </summary>
-        /// <param name="srcFile"></param>
-        /// <returns></returns>
-        public static Encoding GetFileEncoding(string srcFile)
-        {
-            // *** Use Default of Encoding.Default (Ansi CodePage)
-            Encoding enc = Encoding.Default;
-
-            // *** Detect byte order mark if any - otherwise assume default
-            byte[] buffer = new byte[5];
-            System.IO.FileStream file = new System.IO.FileStream(srcFile, System.IO.FileMode.Open);
-            file.Read(buffer, 0, 5);
-            file.Close();
-
-            if (buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
-                enc = Encoding.UTF8;
-            else if (buffer[0] == 0xfe && buffer[1] == 0xff)
-                enc = Encoding.Unicode;
-            else if (buffer[0] == 0 && buffer[1] == 0 && buffer[2] == 0xfe && buffer[3] == 0xff)
-                enc = Encoding.UTF32;
-            else if (buffer[0] == 0x2b && buffer[1] == 0x2f && buffer[2] == 0x76)
-                enc = Encoding.UTF7;
-
-            return enc;
-
         }
     }
 }

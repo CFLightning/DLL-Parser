@@ -12,15 +12,13 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 {
     public class SaveTool
     {
-        static System.Text.Encoding globalEncoding = System.Text.Encoding.UTF8;
-
         public static bool SaveObjectsToFiles(string path)
         {
             string objPath = path + "Objects";
             DirectoryInfo directory = Directory.CreateDirectory(objPath);
             foreach (ObjectClass obj in ObjectClassRepository.objectRepository)
             {
-                File.WriteAllText(path + @"\Objects\" + obj.Type + " " + obj.Number + " " + obj.Name + ".txt", obj.Contents, globalEncoding);
+                File.WriteAllText(path + @"\Objects\" + obj.Type + " " + obj.Number + " " + obj.Name + ".txt", obj.Contents, EncodingManager.target);
             }
             return true;
         }
@@ -53,28 +51,28 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
                 if (modChange.ChangeType == "Code" || modChange.ChangeType == "Field")
                 {
-                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, globalEncoding);
-                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, globalEncoding);
-                    File.AppendAllText(fileName, modChange.Contents, globalEncoding);
-                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, globalEncoding);
+                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, EncodingManager.target);
+                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, EncodingManager.target);
+                    File.AppendAllText(fileName, modChange.Contents, EncodingManager.target);
+                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, EncodingManager.target);
 
                     // Details
-                    File.AppendAllText(detailFileName, modChange.Contents, globalEncoding);
-                    File.AppendAllText(detailFileName, Environment.NewLine + separatorLine + Environment.NewLine, globalEncoding);
+                    File.AppendAllText(detailFileName, modChange.Contents, EncodingManager.target);
+                    File.AppendAllText(detailFileName, Environment.NewLine + separatorLine + Environment.NewLine, EncodingManager.target);
                 }
                 else if (modChange.ChangeType == "Column")
                 {
-                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, globalEncoding);
-                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, globalEncoding);
-                    File.AppendAllText(fileName, "New " + modChange.ChangeType + " : " + modChange.Contents, globalEncoding);
-                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, globalEncoding);
+                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, EncodingManager.target);
+                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, EncodingManager.target);
+                    File.AppendAllText(fileName, "New " + modChange.ChangeType + " : " + modChange.Contents, EncodingManager.target);
+                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, EncodingManager.target);
                 }
                 else if (modChange.ChangeType == "NewObj")
                 {
-                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, globalEncoding);
-                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, globalEncoding);
-                    File.AppendAllText(fileName, modChange.Contents, globalEncoding);
-                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, globalEncoding);
+                    File.AppendAllText(fileName, "Source object: " + modChange.SourceObject + Environment.NewLine, EncodingManager.target);
+                    File.AppendAllText(fileName, "Change location: " + modChange.Location + Environment.NewLine + Environment.NewLine, EncodingManager.target);
+                    File.AppendAllText(fileName, modChange.Contents, EncodingManager.target);
+                    File.AppendAllText(fileName, Environment.NewLine + separatorLine + Environment.NewLine, EncodingManager.target);
                 }
             }
             return true;
@@ -107,7 +105,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                 {
                     if (obj.changelog.GroupBy(x => x.ChangelogCode).Select(grp => grp.First()).ToList().Contains(chg))
                     {
-                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + ".txt", obj.Contents, globalEncoding);
+                        File.AppendAllText(objModPath + @"\Objects modificated in " + CleanFileName(chg.ChangelogCode) + ".txt", obj.Contents, EncodingManager.target);
                     }
                 }
             }
@@ -125,7 +123,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
 
             string docPath = path + "Documentation";
             DirectoryInfo directory = Directory.CreateDirectory(docPath);
-            File.WriteAllText(docPath + @"\Documentation.txt", documentation, globalEncoding);
+            File.WriteAllText(docPath + @"\Documentation.txt", documentation, EncodingManager.target);
 
             docPath = docPath + @"\Modification Documentation";
             directory = Directory.CreateDirectory(docPath);
@@ -150,7 +148,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.saveTool
                         {
                             line = line.Replace("#" + mappingDictionary[modification] + "#", "#" + modification + "#");
                         }
-                        File.AppendAllText(docPath + @"\" + CleanFileName(modification) + " documentation file.txt", lineAmount + line.Substring(line.IndexOf("<next>")) + Environment.NewLine, globalEncoding);
+                        File.AppendAllText(docPath + @"\" + CleanFileName(modification) + " documentation file.txt", lineAmount + line.Substring(line.IndexOf("<next>")) + Environment.NewLine, EncodingManager.target);
                         lineAmount++;
                     }
                 }

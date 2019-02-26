@@ -19,10 +19,10 @@
             location = name;
             sourceObject = sObject;
         }
-        public string Contents { get => contents; set => contents = value; }
-        public string ChangelogCode { get => changelogCode; set => changelogCode = value; }
-        public string ChangeType { get => changeType; set => changeType = value; }
-        public string Location { get => location; set => location = value; }
-        public string SourceObject { get => sourceObject; set => sourceObject = value; }
+        public string Contents { get { return contents; } set { contents = value; } }
+        public string ChangelogCode { get { return changelogCode; } set { changelogCode = value; } }
+        public string ChangeType { get { return changeType; } set { changeType = value; } }
+        public string Location { get { return location; } set { location = value; } }
+        public string SourceObject { get { return sourceObject; } set { sourceObject = value; } }
     }
 }

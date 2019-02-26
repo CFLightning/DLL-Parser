@@ -12,7 +12,7 @@ namespace ConsoleApp1
 
             //string inPath = @"C:\Users\Administrator\Documents\FARUTEX\LIVE_ALL_17_10_2017.txt";
             //string inPath = @"C:\Users\Administrator\Documents\TEUTONIA\ObjAllTeutonia_p1.txt";
-            string inPath = @"C:\Users\Administrator\Documents\KRP.01.001_KRP.01.002.txt";
+            string inPath = @"C:\Users\michal.dlugosz\Desktop\dttest.txt";
             //string inPath = @"C:\Users\Administrator\AppData\Local\Temp\2\NAVCommentTool\Objects\Table 5 FinanceChargeTerms.txt";
 
                 //      PassAllModifications

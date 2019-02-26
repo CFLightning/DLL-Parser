@@ -369,7 +369,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             TagRepo.ClearRepo(true);
             TagRepo.DeleteFiles();
 
-            StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1"));
+            StreamReader inputfile = new StreamReader(path, EncodingManager.nav);
             
             string line;
             List<string> mods = new List<string>();
@@ -391,7 +391,7 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.changeDetection
             TagRepo.ClearRepo(false);
             TagRepo.DeleteFiles();
 
-            StreamReader inputfile = new StreamReader(path, Encoding.GetEncoding("ISO-8859-1"));
+            StreamReader inputfile = new StreamReader(path, EncodingManager.nav);
 
             string line;
             List<string> mods = new List<string>();
