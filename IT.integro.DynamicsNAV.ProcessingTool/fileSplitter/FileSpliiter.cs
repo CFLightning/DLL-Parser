@@ -32,10 +32,10 @@ namespace IT.integro.DynamicsNAV.ProcessingTool.fileSplitter
                             }
                             if (newObject.Name != "")
                             {
-                                if (inputfile.EndOfStream)
-                                {
-                                    builder.AppendLine("}");
-                                }
+                                //if (inputfile.EndOfStream)
+                                //{
+                                //    builder.AppendLine("}");
+                                //}
                                 newObject.Contents = builder.ToString();
                                 ObjectClassRepository.AppendObject(newObject);
                             }
